@@ -1,9 +1,7 @@
 from django.urls import path, include
 from rest_framework import routers
 from .views import UserViewSet, OrganizationViewSet, OrganizationUsersViewSet
-
 from django.contrib.auth.forms import UserCreationForm
-
 
 
 router = routers.DefaultRouter()

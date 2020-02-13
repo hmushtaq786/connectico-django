@@ -24,11 +24,38 @@ class UserViewSet(viewsets.ModelViewSet):
         print('create')
         # queryset = get_user_model().objects.all()
         # serializer = UserSerializer(queryset, many=True)
-        user = get_user_model().objects.create(
-            email=request.data['email'], username=request.data['username'], password=make_password(request.data['password']))
+        my = {'df': 'fd'}
+        my.setdefault
+        # print(request.data)
+        # if request.data['status_line']:
+        #     request.data['status_line'] = ''
+        #     print(hi1)
+        # if request.data['phone_number']:
+        #     request.data['phone_number'] = ''
+        #     print(hi2)
+        # if request.data['photo_address']:
+        #     request.data['photo_address'] = ''
+        #     print(hi3)
 
-        serializer = UserSerializer(user)
-        print('Hashing password done!')
+        _mutable = request.data._mutable
+        request.data._mutable = True
+        if request.method == 'POST':
+            user = get_user_model().objects.create(
+                email=request.data['email'],
+                username=request.data['username'],
+                password=make_password(request.data['password']),
+                first_name=request.data['first_name'],
+                last_name=request.data['last_name'],
+                status_line=request.data.setdefault('status_line', 'a'),
+                phone_number=request.data.setdefault('phone_number', 'b'),
+                photo_address=request.data.setdefault('photo_address', 'c'))
+
+            serializer = UserSerializer(user)
+            request.data._mutable = _mutable
+        else:
+            queryset = get_user_model().objects.all()
+            serializer = UserSerializer(queryset, many=True)
+
         return Response(serializer.data)
 
     # @list_route(methods=['get'], url_path='users/(?P<username>\w+)')
