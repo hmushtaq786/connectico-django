@@ -23,7 +23,7 @@ class User(AbstractUser):
 class Organization(models.Model):
     name = models.CharField(max_length=30, verbose_name='Organization name')
     website = models.CharField(max_length=50, verbose_name='Website', blank=True)
-    description = models.TextField(verbose_name='Description', blank=True)
+    description = models.TextField(verbose_name='Description', blank=True, null=True)
     photo_address = models.CharField(max_length=255, null=True, blank=True, verbose_name='Photo address')
     address = models.CharField(max_length=100, verbose_name='Address', blank=True)
     phone_number = models.CharField(max_length=20, verbose_name='Phone number', blank=True)
@@ -42,7 +42,7 @@ class Organization(models.Model):
 class Workspace(models.Model):
     w_id = models.AutoField(primary_key=True)
     w_name = models.CharField(max_length=30, verbose_name='Workspace name')
-    photo_address = models.TextField(blank=True, null=True, verbose_name='Photo address')
+    description = models.CharField(max_length=200, blank=True, null=True, verbose_name='Description')
     w_address = models.CharField(max_length=100, verbose_name='Address', blank=True)
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
