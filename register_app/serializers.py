@@ -1,8 +1,7 @@
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
-from .models import Organization
-from .models import User
+from .models import Organization, User, Workspace
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -24,5 +23,12 @@ class UserMiniSerializer(serializers.ModelSerializer):
 class OrganizationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Organization
+        fields = '__all__'
+        # fields = ('created_by_name',)
+
+
+class WorkspaceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Workspace
         fields = '__all__'
         # fields = ('created_by_name',)

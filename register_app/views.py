@@ -6,8 +6,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework.decorators import action, api_view, authentication_classes, permission_classes
-from .models import Organization
-from .serializers import UserSerializer, OrganizationSerializer, UserMiniSerializer
+from .models import Organization, Workspace
+from .serializers import UserSerializer, OrganizationSerializer, UserMiniSerializer, WorkspaceSerializer
 from rest_framework.authentication import TokenAuthentication, BasicAuthentication
 from django.contrib.auth.hashers import make_password
 
@@ -131,6 +131,21 @@ class OrganizationUsersViewSet(viewsets.ModelViewSet):
         users = get_list_or_404(queryset,)
         print(users)
         serializer = UserMiniSerializer(users, many=True)
+        print(serializer)
+        print(serializer.data)
+        return Response(serializer.data)
+
+
+class OrganizationWorkspaceViewSet(viewsets.ModelViewSet):
+    queryset = Workspace.objects.all()
+    serializer_class = WorkspaceSerializer
+    authentication_classes = (TokenAuthentication,)
+
+    def retrieve(self, request, pk=None):
+        queryset = Workspace.objects.filter(organization_id=pk)
+        print(queryset)
+        workspaces = get_list_or_404(queryset,)
+        serializer = WorkspaceSerializer(workspaces, many=True)
         print(serializer)
         print(serializer.data)
         return Response(serializer.data)

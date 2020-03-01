@@ -50,6 +50,8 @@ class Workspace(models.Model):
     organization_id = models.ForeignKey(
         Organization, null=True, on_delete=models.SET_NULL)
 
+    def __str__(self):
+        return self.w_name
 
 class Project(models.Model):
     p_id = models.AutoField(primary_key=True)
