@@ -24,6 +24,8 @@ class InvitedUser(models.Model):
     password =  models.CharField(max_length=50, verbose_name='Password', blank=True)
     organization_id = organization_id = models.ForeignKey(
         'Organization', on_delete=models.CASCADE, null=True, verbose_name='Organization', default='')
+    def __str__(self):
+        return self.email
 
 class Organization(models.Model):
     name = models.CharField(max_length=30, verbose_name='Organization name')

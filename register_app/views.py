@@ -1,3 +1,6 @@
+from django.core.mail import send_mail
+from password_generator import PasswordGenerator
+import re
 from rest_framework.decorators import api_view
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404, get_list_or_404
@@ -7,8 +10,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework.decorators import action, api_view, authentication_classes, permission_classes
-from .models import Organization, Workspace, Project, Team
-from .serializers import UserSerializer, OrganizationSerializer, UserMiniSerializer, WorkspaceSerializer, ProjectSerializer, TeamSerializer
+from .models import Organization, Workspace, Project, Team, InvitedUser
+from .serializers import UserSerializer, OrganizationSerializer, UserMiniSerializer, WorkspaceSerializer, ProjectSerializer, TeamSerializer, InvitedUserSerializer
 from rest_framework.authentication import TokenAuthentication, BasicAuthentication
 from django.contrib.auth.hashers import make_password
 
@@ -167,11 +170,22 @@ class OrganizationProjectViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
-def invite(request):
-    pass
+class OrganizationInvitedUserViewSet(viewsets.ModelViewSet):
+    queryset = InvitedUser.objects.all()
+    serializer_class = InvitedUserSerializer
+    authentication_classes = (TokenAuthentication,)
+
+    def retrieve(self, request, pk=None):
+        queryset = InvitedUser.objects.filter(organization_id=pk)
+        print(queryset)
+        invited_users = get_list_or_404(queryset,)
+        serializer = InvitedUserSerializer(invited_users, many=True)
+        print(serializer)
+        print(serializer.data)
+        return Response(serializer.data)
+
 
 class InviteMembers(APIView):
-
     authentication_classes = (TokenAuthentication,)
 
     def get(self, request):
@@ -179,5 +193,43 @@ class InviteMembers(APIView):
         return Response(request.method)
 
     def post(self, request):
-        print(request.data)
-        return Response(request.data)
+        regex = '^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$'
+        valid_emails = []
+        pwo = PasswordGenerator()
+        pwo.minlen = 20
+        pwo.maxlen = 20
+        pwo.minuchars = 3
+        pwo.minlchars = 3
+        pwo.minnumbers = 5
+        pwo.minschars = 3
+        pwo.excludeschars = ".,;:"
+
+        for email in request.data['list']:
+            if(re.search(regex, email)):
+                queryset = Organization.objects.filter(
+                    id=request.data['org_id'])
+                org = get_object_or_404(queryset,)
+                password = pwo.generate()
+                store_invited_email = InvitedUser.objects.create(
+                    email=email, password=password, organization_id=org)
+                send_mail(
+                    'Login Credentials',
+                    f'''
+                Good day!
+                You've been invited to join {org} at Connectico. Please use the given credentials to login at 127.0.0.1:4200.
+                
+                Email: {email}
+                Password: {password}
+
+                Regards,
+                Connectico Team
+                ''',
+                    'no-reply@connectico.com',
+                    [email],
+                    fail_silently=False,
+                )
+                valid_emails.append(email)
+            else:
+                print('Discarded', email)
+
+        return Response(valid_emails)
