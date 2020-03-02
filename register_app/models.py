@@ -19,6 +19,11 @@ class User(AbstractUser):
     def __str__(self):
         return self.first_name + ' ' + self.last_name
 
+class InvitedUser(models.Model):
+    email = models.CharField(max_length=50, verbose_name='Email', blank=True)
+    password =  models.CharField(max_length=50, verbose_name='Password', blank=True)
+    organization_id = organization_id = models.ForeignKey(
+        'Organization', on_delete=models.CASCADE, null=True, verbose_name='Organization', default='')
 
 class Organization(models.Model):
     name = models.CharField(max_length=30, verbose_name='Organization name')

@@ -1,3 +1,4 @@
+from rest_framework.decorators import api_view
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404, get_list_or_404
 from django.shortcuts import render
@@ -6,8 +7,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework.decorators import action, api_view, authentication_classes, permission_classes
-from .models import Organization, Workspace
-from .serializers import UserSerializer, OrganizationSerializer, UserMiniSerializer, WorkspaceSerializer
+from .models import Organization, Workspace, Project, Team
+from .serializers import UserSerializer, OrganizationSerializer, UserMiniSerializer, WorkspaceSerializer, ProjectSerializer, TeamSerializer
 from rest_framework.authentication import TokenAuthentication, BasicAuthentication
 from django.contrib.auth.hashers import make_password
 
@@ -149,3 +150,34 @@ class OrganizationWorkspaceViewSet(viewsets.ModelViewSet):
         print(serializer)
         print(serializer.data)
         return Response(serializer.data)
+
+
+class OrganizationProjectViewSet(viewsets.ModelViewSet):
+    queryset = Project.objects.select_related('workspace_id', '')
+    serializer_class = ProjectSerializer
+    authentication_classes = (TokenAuthentication,)
+
+    def retrieve(self, request, pk=None):
+        queryset = Project.objects.filter(organization_id=pk)
+        print(queryset)
+        workspaces = get_list_or_404(queryset,)
+        serializer = WorkspaceSerializer(workspaces, many=True)
+        print(serializer)
+        print(serializer.data)
+        return Response(serializer.data)
+
+
+def invite(request):
+    pass
+
+class InviteMembers(APIView):
+
+    authentication_classes = (TokenAuthentication,)
+
+    def get(self, request):
+
+        return Response(request.method)
+
+    def post(self, request):
+        print(request.data)
+        return Response(request.data)
