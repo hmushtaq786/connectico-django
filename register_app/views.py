@@ -185,6 +185,30 @@ class OrganizationInvitedUserViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
+class FirstTimeUserAuth(APIView):
+    authentication_classes = (TokenAuthentication,)
+
+    def get(self, request):
+
+        return Response(request.method)
+
+    def post(self, request):
+        queryset = InvitedUser.objects.filter(
+            email=request.data['email'], password=request.data['password'])
+        new_user = get_object_or_404(queryset,)
+        serializer = InvitedUserSerializer(new_user, many=False)
+        return Response(serializer.data)
+
+    # def retrieve(self, request, pk=None):
+    #     queryset = InvitedUser.objects.filter(organization_id=pk)
+    #     print(queryset)
+    #     invited_users = get_list_or_404(queryset,)
+    #     serializer = InvitedUserSerializer(invited_users, many=True)
+    #     print(serializer)
+    #     print(serializer.data)
+    #     return Response(serializer.data)
+
+
 class InviteMembers(APIView):
     authentication_classes = (TokenAuthentication,)
 
