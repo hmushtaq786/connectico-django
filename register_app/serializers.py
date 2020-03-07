@@ -17,7 +17,7 @@ class UserMiniSerializer(serializers.ModelSerializer):
         # model = User
         model = get_user_model()
         # fields = ('first_name', 'last_name')
-        fields = ('id', 'first_name', 'last_name')
+        fields = ('id', 'first_name', 'last_name', 'email', 'photo_address')
 
 
 class OrganizationSerializer(serializers.ModelSerializer):
