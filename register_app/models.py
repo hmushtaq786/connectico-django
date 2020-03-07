@@ -10,6 +10,7 @@ class User(AbstractUser):
     phone_number = models.CharField(max_length=20, verbose_name='Phone number', blank=True, null=True)
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
+    org_creator = models.BooleanField(verbose_name='Creator', null=True)
     organization_id = models.ForeignKey(
         'Organization', on_delete=models.CASCADE, null=True, verbose_name='Organization', default='')
     # if user is logged in for the first time, we need to direct him to the page where he must enter his

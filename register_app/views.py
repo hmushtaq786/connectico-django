@@ -41,9 +41,14 @@ class UserViewSet(viewsets.ModelViewSet):
         #     print(hi3)
 
         if request.method == 'POST':
-            print(request.method)
             _mutable = request.data._mutable
             request.data._mutable = True
+            if request.data.get('organization_id'):
+                org_id = request.data['organization_id']
+                queryset = Organization.objects.filter(id=org_id)
+                org = get_object_or_404(queryset,)
+            else:
+                org = None
             user = get_user_model().objects.create(
                 email=request.data['email'],
                 username=request.data['username'],
@@ -52,7 +57,8 @@ class UserViewSet(viewsets.ModelViewSet):
                 last_name=request.data['last_name'],
                 status_line=request.data.setdefault('status_line', ''),
                 phone_number=request.data.setdefault('phone_number', ''),
-                photo_address=request.data.setdefault('photo_address', ''))
+                photo_address=request.data.setdefault('photo_address', ''),
+                organization_id=org)
 
             serializer = UserSerializer(user)
             request.data._mutable = _mutable
@@ -116,12 +122,16 @@ class OrganizationViewSet(viewsets.ModelViewSet):
     serializer_class = OrganizationSerializer
     authentication_classes = (TokenAuthentication,)
 
-    def retrieve(self, request, pk=None):
+    # def retrieve(self, request, pk=None):
         # lookup_value_regex = '[\w.]+'
-        queryset = Organization.objects.filter(created_by=pk)
-        organization = get_object_or_404(queryset,)
-        serializer = OrganizationSerializer(organization)
-        return Response(serializer.data)
+
+        # if pk[0:1] is 'l':
+
+        # print(pk[0:1])
+        # queryset = Organization.objects.filter(created_by=pk)
+        # organization = get_object_or_404(queryset,)
+        # serializer = OrganizationSerializer(organization)
+        # return Response(serializer.data)
 
 
 class OrganizationUsersViewSet(viewsets.ModelViewSet):
@@ -175,14 +185,14 @@ class OrganizationInvitedUserViewSet(viewsets.ModelViewSet):
     serializer_class = InvitedUserSerializer
     authentication_classes = (TokenAuthentication,)
 
-    def retrieve(self, request, pk=None):
-        queryset = InvitedUser.objects.filter(organization_id=pk)
-        print(queryset)
-        invited_users = get_list_or_404(queryset,)
-        serializer = InvitedUserSerializer(invited_users, many=True)
-        print(serializer)
-        print(serializer.data)
-        return Response(serializer.data)
+    # def retrieve(self, request, pk=None):
+    #     queryset = InvitedUser.objects.filter(organization_id=pk)
+    #     print(queryset)
+    #     invited_users = get_list_or_404(queryset,)
+    #     serializer = InvitedUserSerializer(invited_users, many=True)
+    #     print(serializer)
+    #     print(serializer.data)
+    #     return Response(serializer.data)
 
 
 class FirstTimeUserAuth(APIView):
