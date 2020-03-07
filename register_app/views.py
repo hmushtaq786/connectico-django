@@ -133,7 +133,6 @@ class OrganizationViewSet(viewsets.ModelViewSet):
         # serializer = OrganizationSerializer(organization)
         # return Response(serializer.data)
 
-
 class OrganizationUsersViewSet(viewsets.ModelViewSet):
     queryset = get_user_model().objects.all()
     serializer_class = UserMiniSerializer
@@ -150,11 +149,12 @@ class OrganizationUsersViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
-class OrganizationWorkspaceViewSet(viewsets.ModelViewSet):
+class WorkspaceViewSet(viewsets.ModelViewSet):
     queryset = Workspace.objects.all()
     serializer_class = WorkspaceSerializer
     authentication_classes = (TokenAuthentication,)
 
+    # get workspaces based on organization id
     def retrieve(self, request, pk=None):
         queryset = Workspace.objects.filter(organization_id=pk)
         print(queryset)
