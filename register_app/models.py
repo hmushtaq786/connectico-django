@@ -67,7 +67,6 @@ class Project(models.Model):
     p_description = models.CharField(max_length=100, verbose_name='Description', blank=True)
     p_start_date = models.DateField(null=True)
     p_end_date = models.DateField(null=True)
-    p_budget = models.IntegerField(blank=True)
     p_status = models.CharField(max_length=10, blank=True, verbose_name='Status')  # completed, active etc
     workspace_id = models.ForeignKey(
         Workspace, null=True, on_delete=models.SET_NULL)
@@ -75,6 +74,8 @@ class Project(models.Model):
     updated_on = models.DateTimeField(auto_now=True)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
 
+    def __str__(self):
+        return self.p_name
 
 class Team(models.Model):
     tm_id = models.AutoField(primary_key=True)
@@ -88,6 +89,8 @@ class Team(models.Model):
     updated_on = models.DateTimeField(auto_now=True)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
 
+    def __str__(self):
+        return self.tm_name
 
 class Task(models.Model):
 
@@ -114,6 +117,9 @@ class Task(models.Model):
     assigned_to = models.ForeignKey(
         settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL, related_name='assigned_to')
 
+
+    def __str__(self):
+        return self.t_name
 
 class Event(models.Model):
     e_id = models.AutoField(primary_key=True)
