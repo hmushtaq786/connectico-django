@@ -133,6 +133,26 @@ class OrganizationViewSet(viewsets.ModelViewSet):
         # serializer = OrganizationSerializer(organization)
         # return Response(serializer.data)
 
+class ProjectViewSet(viewsets.ModelViewSet):
+    queryset = Project.objects.all()
+    serializer_class = ProjectSerializer
+    authentication_classes = (TokenAuthentication,)
+
+    def retrieve(self, request, pk=None):
+        print(pk)
+        action = pk[0]
+        pk = pk[1:]
+        print(pk)
+        if action == 'w': #to search using the workspace_id
+            queryset = Project.objects.filter(workspace_id=pk)
+            
+        elif action == 'p': #to search using the project_id
+            queryset = Project.objects.filter(p_id=pk)
+
+        projects = get_list_or_404(queryset,)
+        serializer = ProjectSerializer(projects, many=True)
+        return Response(serializer.data)
+
 class OrganizationUsersViewSet(viewsets.ModelViewSet):
     queryset = get_user_model().objects.all()
     serializer_class = UserMiniSerializer

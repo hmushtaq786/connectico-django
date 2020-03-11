@@ -70,9 +70,11 @@ class Project(models.Model):
     p_status = models.CharField(max_length=10, blank=True, verbose_name='Status')  # completed, active etc
     workspace_id = models.ForeignKey(
         Workspace, null=True, on_delete=models.SET_NULL)
+    p_manager_id = models.ForeignKey(
+        settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL, related_name='project_manager')
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
-    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL, related_name='project_creator')
 
     def __str__(self):
         return self.p_name
