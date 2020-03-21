@@ -25,7 +25,6 @@ class UserViewSet(viewsets.ModelViewSet):
     authentication_classes = (BasicAuthentication,)
 
     def create(self, request):
-        print('create')
         # queryset = get_user_model().objects.all()
         # serializer = UserSerializer(queryset, many=True)
 
@@ -123,15 +122,16 @@ class OrganizationViewSet(viewsets.ModelViewSet):
     authentication_classes = (TokenAuthentication,)
 
     # def retrieve(self, request, pk=None):
-        # lookup_value_regex = '[\w.]+'
+    # lookup_value_regex = '[\w.]+'
 
-        # if pk[0:1] is 'l':
+    # if pk[0:1] is 'l':
 
-        # print(pk[0:1])
-        # queryset = Organization.objects.filter(created_by=pk)
-        # organization = get_object_or_404(queryset,)
-        # serializer = OrganizationSerializer(organization)
-        # return Response(serializer.data)
+    # print(pk[0:1])
+    # queryset = Organization.objects.filter(created_by=pk)
+    # organization = get_object_or_404(queryset,)
+    # serializer = OrganizationSerializer(organization)
+    # return Response(serializer.data)
+
 
 class ProjectViewSet(viewsets.ModelViewSet):
     queryset = Project.objects.all()
@@ -139,19 +139,18 @@ class ProjectViewSet(viewsets.ModelViewSet):
     authentication_classes = (TokenAuthentication,)
 
     def retrieve(self, request, pk=None):
-        print(pk)
         action = pk[0]
         pk = pk[1:]
-        print(pk)
-        if action == 'w': #to search using the workspace_id
+        if action == 'w':  # to search using the workspace_id
             queryset = Project.objects.filter(workspace_id=pk)
-            
-        elif action == 'p': #to search using the project_id
+
+        elif action == 'p':  # to search using the project_id
             queryset = Project.objects.filter(p_id=pk)
 
         projects = get_list_or_404(queryset,)
         serializer = ProjectSerializer(projects, many=True)
         return Response(serializer.data)
+
 
 class OrganizationUsersViewSet(viewsets.ModelViewSet):
     queryset = get_user_model().objects.all()
@@ -160,12 +159,8 @@ class OrganizationUsersViewSet(viewsets.ModelViewSet):
 
     def retrieve(self, request, pk=None):
         queryset = get_user_model().objects.filter(organization_id=pk)
-        print(queryset)
         users = get_list_or_404(queryset,)
-        print(users)
         serializer = UserMiniSerializer(users, many=True)
-        print(serializer)
-        print(serializer.data)
         return Response(serializer.data)
 
 
@@ -183,11 +178,8 @@ class WorkspaceMembersViewSet(viewsets.ModelViewSet):
     # get workspaces based on organization id
     def retrieve(self, request, pk=None):
         queryset = Workspace.objects.filter(organization_id=pk)
-        print(queryset)
         workspaces = get_list_or_404(queryset,)
         serializer = WorkspaceSerializer(workspaces, many=True)
-        print(serializer)
-        print(serializer.data)
         return Response(serializer.data)
 
 
@@ -198,11 +190,8 @@ class OrganizationProjectViewSet(viewsets.ModelViewSet):
 
     def retrieve(self, request, pk=None):
         queryset = Project.objects.filter(organization_id=pk)
-        print(queryset)
         workspaces = get_list_or_404(queryset,)
         serializer = WorkspaceSerializer(workspaces, many=True)
-        print(serializer)
-        print(serializer.data)
         return Response(serializer.data)
 
 
@@ -284,7 +273,7 @@ class InviteMembers(APIView):
                 Regards,
                 Connectico Team
                 ''',
-                    'no-reply@connectico.com',
+                    'Connectico Team',
                     [email],
                     fail_silently=False,
                 )
