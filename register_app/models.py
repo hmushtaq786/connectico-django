@@ -5,9 +5,12 @@ from django.conf import settings
 
 # Create your models here.
 class User(AbstractUser):
-    status_line = models.CharField(max_length=100, verbose_name='Status', blank=True, null=True)
-    photo_address = models.CharField(max_length=255, blank=True, verbose_name='Photo address', null=True)
-    phone_number = models.CharField(max_length=20, verbose_name='Phone number', blank=True, null=True)
+    status_line = models.CharField(
+        max_length=100, verbose_name='Status', blank=True, null=True)
+    photo_address = models.CharField(
+        max_length=255, blank=True, verbose_name='Photo address', null=True)
+    phone_number = models.CharField(
+        max_length=20, verbose_name='Phone number', blank=True, null=True)
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
     org_creator = models.BooleanField(verbose_name='Creator', null=True)
@@ -15,26 +18,36 @@ class User(AbstractUser):
         'Organization', on_delete=models.CASCADE, null=True, verbose_name='Organization', default='')
     # if user is logged in for the first time, we need to direct him to the page where he must enter his
     # details first
-    is_first_login = models.BooleanField(verbose_name='First login?', default=True)
+    is_first_login = models.BooleanField(
+        verbose_name='First login?', default=True)
 
     def __str__(self):
         return self.first_name + ' ' + self.last_name
 
+
 class InvitedUser(models.Model):
     email = models.CharField(max_length=50, verbose_name='Email', blank=True)
-    password =  models.CharField(max_length=50, verbose_name='Password', blank=True)
+    password = models.CharField(
+        max_length=50, verbose_name='Password', blank=True)
     organization_id = organization_id = models.ForeignKey(
         'Organization', on_delete=models.CASCADE, null=True, verbose_name='Organization', default='')
+
     def __str__(self):
         return self.email
 
+
 class Organization(models.Model):
     name = models.CharField(max_length=30, verbose_name='Organization name')
-    website = models.CharField(max_length=50, verbose_name='Website', blank=True)
-    description = models.TextField(verbose_name='Description', blank=True, null=True)
-    photo_address = models.CharField(max_length=255, null=True, blank=True, verbose_name='Photo address')
-    address = models.CharField(max_length=100, verbose_name='Address', blank=True)
-    phone_number = models.CharField(max_length=20, verbose_name='Phone number', blank=True)
+    website = models.CharField(
+        max_length=50, verbose_name='Website', blank=True)
+    description = models.TextField(
+        verbose_name='Description', blank=True, null=True)
+    photo_address = models.CharField(
+        max_length=255, null=True, blank=True, verbose_name='Photo address')
+    address = models.CharField(
+        max_length=100, verbose_name='Address', blank=True)
+    phone_number = models.CharField(
+        max_length=20, verbose_name='Phone number', blank=True)
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
     created_by = models.OneToOneField(
@@ -47,52 +60,64 @@ class Organization(models.Model):
     def __str__(self):
         return self.name
 
+
 class Workspace(models.Model):
     w_id = models.AutoField(primary_key=True)
     w_name = models.CharField(max_length=30, verbose_name='Workspace name')
-    description = models.CharField(max_length=200, blank=True, null=True, verbose_name='Description')
-    w_address = models.CharField(max_length=100, verbose_name='Address', blank=True)
+    description = models.CharField(
+        max_length=200, blank=True, null=True, verbose_name='Description')
+    w_address = models.CharField(
+        max_length=100, verbose_name='Address', blank=True)
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
-    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
     organization_id = models.ForeignKey(
         Organization, null=True, on_delete=models.SET_NULL)
 
     def __str__(self):
         return self.w_name
 
+
 class Project(models.Model):
     p_id = models.AutoField(primary_key=True)
     p_name = models.CharField(max_length=30, verbose_name='Project name')
-    p_description = models.CharField(max_length=100, verbose_name='Description', blank=True)
+    p_description = models.CharField(
+        max_length=100, verbose_name='Description', blank=True)
     p_start_date = models.DateField(null=True)
     p_end_date = models.DateField(null=True)
-    p_status = models.CharField(max_length=10, blank=True, verbose_name='Status')  # completed, active etc
+    p_status = models.CharField(
+        max_length=10, blank=True, verbose_name='Status')  # completed, active etc
     workspace_id = models.ForeignKey(
         Workspace, null=True, on_delete=models.SET_NULL)
     p_manager_id = models.ForeignKey(
         settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL, related_name='project_manager')
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
-    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL, related_name='project_creator')
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL, related_name='project_creator')
 
     def __str__(self):
         return self.p_name
 
+
 class Team(models.Model):
     tm_id = models.AutoField(primary_key=True)
     tm_name = models.CharField(max_length=30, verbose_name='Team name')
-    tm_description = models.CharField(max_length=100, verbose_name='Description', blank=True)
+    tm_description = models.CharField(
+        max_length=100, verbose_name='Description', blank=True)
     tm_start_date = models.DateField()
     tm_end_date = models.DateField()
     project_id = models.ForeignKey(
         Project, null=True, on_delete=models.SET_NULL)
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
-    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
 
     def __str__(self):
         return self.tm_name
+
 
 class Task(models.Model):
 
@@ -119,9 +144,9 @@ class Task(models.Model):
     assigned_to = models.ForeignKey(
         settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL, related_name='assigned_to')
 
-
     def __str__(self):
         return self.t_name
+
 
 class Event(models.Model):
     e_id = models.AutoField(primary_key=True)
@@ -132,7 +157,8 @@ class Event(models.Model):
     e_time = models.TimeField()
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
-    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
 
 
 class WorkspaceEvent(Event):
@@ -163,6 +189,9 @@ class Role(models.Model):
     r_id = models.AutoField(primary_key=True)
     r_name = models.CharField(max_length=20)
 
+    def __str__(self):
+        return str(self.r_id)+' '+self.r_name
+
 
 class user_workspace_relation(models.Model):
     uwr_id = models.AutoField(primary_key=True)
@@ -170,6 +199,9 @@ class user_workspace_relation(models.Model):
                              on_delete=models.SET_NULL)
     w_id = models.ForeignKey(Workspace, null=True, on_delete=models.SET_NULL)
     r_id = models.ForeignKey(Role, null=True, on_delete=models.SET_NULL)
+
+    def __str__(self):
+        return 'User '+str(self.u_id)+' is in Workspace '+str(self.w_id)
 
 
 class user_project_relation(models.Model):
@@ -187,6 +219,7 @@ class user_team_relation(models.Model):
     t_id = models.ForeignKey(Team, null=True, on_delete=models.SET_NULL)
     r_id = models.ForeignKey(Role, null=True, on_delete=models.SET_NULL)
 
+
 class Message(models.Model):
     m_id = models.AutoField(primary_key=True)
     m_content = models.TextField(verbose_name='Content')
@@ -199,6 +232,7 @@ class Message(models.Model):
 
     def __str__(self):
         return self.m_content
+
 
 class Notification(models.Model):
     n_id = models.AutoField(primary_key=True)
@@ -216,7 +250,8 @@ class Post(models.Model):
     pst_content = models.CharField(max_length=200)
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
-    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
     pst_filepath = models.FileField(blank=True)
 
 
@@ -249,5 +284,6 @@ class Comment(models.Model):
     c_content = models.CharField(max_length=200)
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
-    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
     post_id = models.ForeignKey(Post, null=True, on_delete=models.SET_NULL)

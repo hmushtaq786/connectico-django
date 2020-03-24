@@ -10,8 +10,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework.decorators import action, api_view, authentication_classes, permission_classes
-from .models import Organization, Workspace, Project, Team, InvitedUser
-from .serializers import UserSerializer, OrganizationSerializer, UserMiniSerializer, WorkspaceSerializer, ProjectSerializer, TeamSerializer, InvitedUserSerializer
+from .models import Organization, Workspace, Project, Team, InvitedUser, user_workspace_relation
+from .serializers import UserSerializer, OrganizationSerializer, UserMiniSerializer, WorkspaceSerializer, ProjectSerializer, TeamSerializer, InvitedUserSerializer, UserWorkspaceRelationsSerializer
 from rest_framework.authentication import TokenAuthentication, BasicAuthentication
 from django.contrib.auth.hashers import make_password
 
@@ -282,3 +282,22 @@ class InviteMembers(APIView):
                 print('Discarded', email)
 
         return Response(valid_emails)
+
+
+class UserWorkspaceRelationViewSet(viewsets.ModelViewSet):
+    queryset = user_workspace_relation.objects.all()
+    serializer_class = UserWorkspaceRelationsSerializer
+    authentication_classes = (TokenAuthentication,)
+
+    def retrieve(self, request, pk=None):
+        action = pk[0]
+        pk = pk[1:]
+        if action == 'u':  # to search using the user_id
+            queryset = user_workspace_relation.objects.filter(u_id=pk)
+
+        elif action == 'w':  # to search using the workspace_id
+            queryset = user_workspace_relation.objects.filter(w_id=pk)
+
+        data = get_list_or_404(queryset,)
+        serializer = UserWorkspaceRelationsSerializer(data, many=True)
+        return Response(serializer.data)
