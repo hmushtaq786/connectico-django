@@ -301,3 +301,14 @@ class UserWorkspaceRelationViewSet(viewsets.ModelViewSet):
         data = get_list_or_404(queryset,)
         serializer = UserWorkspaceRelationsSerializer(data, many=True)
         return Response(serializer.data)
+
+    def destroy(self, request, pk=None):
+        splited_key = pk.split('w')
+        user_id = splited_key[0]
+        user_id = int(user_id[1:])
+        workspace_id = int(splited_key[1])
+
+        queryset = user_workspace_relation.objects.filter(
+            u_id=user_id, w_id=workspace_id)
+        queryset.delete()
+        return Response(queryset)
