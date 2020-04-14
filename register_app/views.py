@@ -324,3 +324,16 @@ class WorkspaceEventViewSet(viewsets.ModelViewSet):
     queryset = WorkspaceEvent.objects.all()
     serializer_class = WorkspaceEventSerializer
     authentication_classes = (TokenAuthentication,)
+
+    def retrieve(self, request, pk=None):
+        action = pk[0]
+        pk = pk[1:]
+        if action == 'w':  # to search using the workspace_id
+            queryset = WorkspaceEvent.objects.filter(workspace_id=pk)
+
+        elif action == 'e':  # to search using the event_id
+            queryset = WorkspaceEvent.objects.filter(e_id=pk)
+
+        events = get_list_or_404(queryset,)
+        serializer = WorkspaceEventSerializer(events, many=True)
+        return Response(serializer.data)
