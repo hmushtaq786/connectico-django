@@ -160,13 +160,17 @@ class Event(models.Model):
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
 
+    def __str__(self):
+        return self.e_name
+
 
 class WorkspaceEvent(Event):
-    we_id = models.AutoField(primary_key=True)
-    event_id = models.ForeignKey(
-        Event, null=True, on_delete=models.SET_NULL, related_name='workspace_event_eid')
+    # we_id = models.AutoField(primary_key=True)
     workspace_id = models.ForeignKey(
         Workspace, null=True, on_delete=models.SET_NULL, related_name='workspace_event_wid')
+
+    def __str__(self):
+        return self.e_name
 
 
 class ProjectEvent(Event):

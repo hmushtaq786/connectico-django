@@ -10,8 +10,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework.decorators import action, api_view, authentication_classes, permission_classes
-from .models import Organization, Workspace, Project, Team, InvitedUser, user_workspace_relation, Event
-from .serializers import UserSerializer, OrganizationSerializer, UserMiniSerializer, WorkspaceSerializer, ProjectSerializer, TeamSerializer, InvitedUserSerializer, UserWorkspaceRelationsSerializer, EventSerializer
+from .models import Organization, Workspace, Project, Team, InvitedUser, user_workspace_relation, Event, WorkspaceEvent
+from .serializers import UserSerializer, OrganizationSerializer, UserMiniSerializer, WorkspaceSerializer, ProjectSerializer, TeamSerializer, InvitedUserSerializer, UserWorkspaceRelationsSerializer, EventSerializer, WorkspaceEventSerializer
 from rest_framework.authentication import TokenAuthentication, BasicAuthentication
 from django.contrib.auth.hashers import make_password
 
@@ -317,4 +317,10 @@ class UserWorkspaceRelationViewSet(viewsets.ModelViewSet):
 class EventViewSet(viewsets.ModelViewSet):
     queryset = Event.objects.all()
     serializer_class = EventSerializer
+    authentication_classes = (TokenAuthentication,)
+
+
+class WorkspaceEventViewSet(viewsets.ModelViewSet):
+    queryset = WorkspaceEvent.objects.all()
+    serializer_class = WorkspaceEventSerializer
     authentication_classes = (TokenAuthentication,)
