@@ -80,3 +80,11 @@ class UserWorkspaceRelationsSerializer(serializers.ModelSerializer):
     class Meta:
         model = user_workspace_relation
         fields = '__all__'
+
+
+class WorkspaceMembersSerializer(serializers.Serializer):
+    u_id__id = serializers.IntegerField()
+    u_id__first_name = serializers.CharField(max_length=200)
+    u_id__last_name = serializers.CharField(max_length=200)
+    u_id__photo_address = serializers.CharField(max_length=255)
+    u_id__email = serializers.EmailField()
