@@ -170,6 +170,12 @@ class WorkspaceViewSet(viewsets.ModelViewSet):
     serializer_class = WorkspaceSerializer
     authentication_classes = (TokenAuthentication,)
 
+    def retrieve(self, request, pk=None):
+        queryset = Workspace.objects.filter(organization_id=pk)
+        workspaces = get_list_or_404(queryset,)
+        serializer = WorkspaceSerializer(workspaces, many=True)
+        return Response(serializer.data)
+
 
 class WorkspaceMembersViewSet(viewsets.ModelViewSet):
     # queryset = get_user_model().objects.all()
