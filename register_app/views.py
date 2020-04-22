@@ -11,9 +11,10 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework.decorators import action, api_view, authentication_classes, permission_classes
 from .models import Organization, Workspace, Project, Team, InvitedUser, user_workspace_relation, Event, WorkspaceEvent
-from .serializers import UserSerializer, OrganizationSerializer, UserMiniSerializer, WorkspaceSerializer, ProjectSerializer, TeamSerializer, InvitedUserSerializer, UserWorkspaceRelationsSerializer, EventSerializer, WorkspaceEventSerializer
+from .serializers import UserSerializer, OrganizationSerializer, UserMiniSerializer, WorkspaceSerializer, ProjectSerializer, TeamSerializer, InvitedUserSerializer, UserWorkspaceRelationsSerializer, EventSerializer, WorkspaceEventSerializer, WorkspaceMembersSerializer
 from rest_framework.authentication import TokenAuthentication, BasicAuthentication
 from django.contrib.auth.hashers import make_password
+from django.db import connection
 
 # Create your views here.
 
@@ -171,15 +172,18 @@ class WorkspaceViewSet(viewsets.ModelViewSet):
 
 
 class WorkspaceMembersViewSet(viewsets.ModelViewSet):
-    queryset = Workspace.objects.all()
-    serializer_class = WorkspaceSerializer
-    authentication_classes = (TokenAuthentication,)
+    # queryset = get_user_model().objects.all()
+    # serializer_class = WorkspaceMembersSerializer
+    # authentication_classes = (TokenAuthentication,)
 
-    # get workspaces based on organization id
     def retrieve(self, request, pk=None):
-        queryset = Workspace.objects.filter(organization_id=pk)
-        workspaces = get_list_or_404(queryset,)
-        serializer = WorkspaceSerializer(workspaces, many=True)
+
+        queryset = user_workspace_relation.objects.select_related(
+            'w_id', 'u_id').values('u_id__id', 'u_id__first_name', 'u_id__last_name', 'u_id__photo_address', 'u_id__email').filter(w_id=pk)
+
+        # print(queryset.query)
+
+        serializer = WorkspaceMembersSerializer(queryset, many=True)
         return Response(serializer.data)
 
 

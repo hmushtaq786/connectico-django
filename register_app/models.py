@@ -200,8 +200,9 @@ class Role(models.Model):
 class user_workspace_relation(models.Model):
     uwr_id = models.AutoField(primary_key=True)
     u_id = models.ForeignKey(settings.AUTH_USER_MODEL, null=True,
-                             on_delete=models.SET_NULL)
-    w_id = models.ForeignKey(Workspace, null=True, on_delete=models.SET_NULL)
+                             on_delete=models.SET_NULL, related_name='workspace_user')
+    w_id = models.ForeignKey(
+        Workspace, null=True, on_delete=models.SET_NULL, related_name='workspace')
     r_id = models.ForeignKey(Role, null=True, on_delete=models.SET_NULL)
 
     def __str__(self):
