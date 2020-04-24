@@ -257,7 +257,8 @@ class Post(models.Model):
     updated_on = models.DateTimeField(auto_now=True)
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
-    pst_filepath = models.FileField(blank=True)
+    pst_filepath = models.CharField(
+        max_length=255, blank=True, verbose_name='File address', null=True)
 
     def __str__(self):
         return self.created_by.first_name + " -> " + self.pst_content
@@ -271,7 +272,7 @@ class WorkspacePost(Post):
         Workspace, null=True, on_delete=models.SET_NULL, related_name='workspace_post_wid')
 
     def __str__(self):
-        return self.created_by.first_name
+        return self.created_by.first_name + " -> " + self.pst_content
 
 
 class ProjectPost(Post):

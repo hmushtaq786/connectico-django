@@ -10,8 +10,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework.decorators import action, api_view, authentication_classes, permission_classes
-from .models import Organization, Workspace, Project, Team, InvitedUser, user_workspace_relation, Event, WorkspaceEvent
-from .serializers import UserSerializer, OrganizationSerializer, UserMiniSerializer, WorkspaceSerializer, ProjectSerializer, TeamSerializer, InvitedUserSerializer, UserWorkspaceRelationsSerializer, EventSerializer, WorkspaceEventSerializer, WorkspaceMembersSerializer
+from .models import Organization, Workspace, Project, Team, InvitedUser, user_workspace_relation, Event, WorkspaceEvent, Post, WorkspacePost
+from .serializers import UserSerializer, OrganizationSerializer, UserMiniSerializer, WorkspaceSerializer, ProjectSerializer, TeamSerializer, InvitedUserSerializer, UserWorkspaceRelationsSerializer, EventSerializer, WorkspaceEventSerializer, WorkspaceMembersSerializer, PostSerializer, WorkspacePostSerializer
 from rest_framework.authentication import TokenAuthentication, BasicAuthentication
 from django.contrib.auth.hashers import make_password
 from django.db import connection
@@ -346,4 +346,29 @@ class WorkspaceEventViewSet(viewsets.ModelViewSet):
 
         events = get_list_or_404(queryset,)
         serializer = WorkspaceEventSerializer(events, many=True)
+        return Response(serializer.data)
+
+
+class PostViewSet(viewsets.ModelViewSet):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+    authentication_classes = (TokenAuthentication,)
+
+
+class WorkspacePostViewSet(viewsets.ModelViewSet):
+    queryset = WorkspacePost.objects.all()
+    serializer_class = WorkspacePostSerializer
+    authentication_classes = (TokenAuthentication,)
+
+    def retrieve(self, request, pk=None):
+        action = pk[0]
+        pk = pk[1:]
+        if action == 'w':  # to search using the workspace_id
+            queryset = WorkspacePost.objects.filter(workspace_id=pk)
+
+        elif action == 'p':  # to search using the post_id
+            queryset = WorkspacePost.objects.filter(pst_id=pk)
+
+        posts = get_list_or_404(queryset,)
+        serializer = WorkspacePostSerializer(posts, many=True)
         return Response(serializer.data)
