@@ -259,13 +259,19 @@ class Post(models.Model):
         settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
     pst_filepath = models.FileField(blank=True)
 
+    def __str__(self):
+        return self.created_by.first_name + " -> " + self.pst_content
+
 
 class WorkspacePost(Post):
-    wp_id = models.AutoField(primary_key=True)
-    post_id = models.ForeignKey(
-        Post, null=True, on_delete=models.SET_NULL, related_name='workspace_post_pid')
+    # wp_id = models.AutoField(primary_key=True)
+    # post_id = models.ForeignKey(
+    #     Post, null=True, on_delete=models.SET_NULL, related_name='workspace_post_pid')
     workspace_id = models.ForeignKey(
         Workspace, null=True, on_delete=models.SET_NULL, related_name='workspace_post_wid')
+
+    def __str__(self):
+        return self.created_by.first_name
 
 
 class ProjectPost(Post):
