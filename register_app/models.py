@@ -257,6 +257,8 @@ class Post(models.Model):
     updated_on = models.DateTimeField(auto_now=True)
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
+    pst_filename = models.CharField(
+        max_length=30, blank=True, verbose_name='File name', null=True)
     pst_filepath = models.CharField(
         max_length=255, blank=True, verbose_name='File address', null=True)
 
