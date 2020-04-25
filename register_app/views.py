@@ -360,15 +360,31 @@ class WorkspacePostViewSet(viewsets.ModelViewSet):
     serializer_class = WorkspacePostSerializer
     authentication_classes = (TokenAuthentication,)
 
+# def retrieve(self, request, pk=None):
+
+#         queryset = user_workspace_relation.objects.select_related(
+#             'w_id', 'u_id').values('u_id__id', 'u_id__first_name', 'u_id__last_name', 'u_id__photo_address', 'u_id__email').filter(w_id=pk)
+
+#         # print(queryset.query)
+
+#         serializer = WorkspaceMembersSerializer(queryset, many=True)
+#         return Response(serializer.data)
+
     def retrieve(self, request, pk=None):
         action = pk[0]
         pk = pk[1:]
         if action == 'w':  # to search using the workspace_id
-            queryset = WorkspacePost.objects.filter(workspace_id=pk)
+            # queryset = WorkspacePost.objects.filter(workspace_id=pk)
+            # queryset = user_workspace_relation.objects.select_related(
+            # 'w_id', 'u_id').values('u_id__id', 'u_id__first_name', 'u_id__last_name', 'u_id__photo_address', 'u_id__email').filter(w_id=pk)
+
+            queryset = WorkspacePost.objects.select_related('created_by').values(
+                'pst_id', 'pst_content', 'created_on', 'pst_filename', 'pst_filepath', 'created_by__id', 'created_by__first_name', 'created_by__last_name', 'created_by__photo_address', 'created_by__email').filter(workspace_id=pk)
 
         elif action == 'p':  # to search using the post_id
             queryset = WorkspacePost.objects.filter(pst_id=pk)
-
-        posts = get_list_or_404(queryset,)
-        serializer = WorkspacePostSerializer(posts, many=True)
-        return Response(serializer.data)
+        print(queryset)
+        # posts = get_list_or_404(queryset,)
+        # serializer = WorkspacePostSerializer(posts, many=True)
+        # return Response(serializer.data)
+        return Response('Okay')
