@@ -100,3 +100,16 @@ class WorkspacePostSerializer(serializers.ModelSerializer):
     class Meta:
         model = WorkspacePost
         fields = '__all__'
+
+
+class WorkspacePostDataSerializer(serializers.Serializer):
+    pst_id = serializers.IntegerField()
+    pst_content = serializers.CharField(max_length=200)
+    created_on = serializers.DateTimeField()
+    pst_filename = serializers.CharField(max_length=30)
+    pst_filepath = serializers.CharField(max_length=255)
+    created_by__id = serializers.IntegerField()
+    created_by__first_name = serializers.CharField(max_length=200)
+    created_by__last_name = serializers.CharField(max_length=200)
+    created_by__photo_address = serializers.CharField(max_length=255)
+    created_by__email = serializers.EmailField()

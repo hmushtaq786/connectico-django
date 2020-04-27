@@ -11,7 +11,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework.decorators import action, api_view, authentication_classes, permission_classes
 from .models import Organization, Workspace, Project, Team, InvitedUser, user_workspace_relation, Event, WorkspaceEvent, Post, WorkspacePost
-from .serializers import UserSerializer, OrganizationSerializer, UserMiniSerializer, WorkspaceSerializer, ProjectSerializer, TeamSerializer, InvitedUserSerializer, UserWorkspaceRelationsSerializer, EventSerializer, WorkspaceEventSerializer, WorkspaceMembersSerializer, PostSerializer, WorkspacePostSerializer
+from .serializers import UserSerializer, OrganizationSerializer, UserMiniSerializer, WorkspaceSerializer, ProjectSerializer, TeamSerializer, InvitedUserSerializer, UserWorkspaceRelationsSerializer, EventSerializer, WorkspaceEventSerializer, WorkspaceMembersSerializer, PostSerializer, WorkspacePostSerializer, WorkspacePostDataSerializer
 from rest_framework.authentication import TokenAuthentication, BasicAuthentication
 from django.contrib.auth.hashers import make_password
 from django.db import connection
@@ -379,12 +379,11 @@ class WorkspacePostViewSet(viewsets.ModelViewSet):
             # 'w_id', 'u_id').values('u_id__id', 'u_id__first_name', 'u_id__last_name', 'u_id__photo_address', 'u_id__email').filter(w_id=pk)
 
             queryset = WorkspacePost.objects.select_related('created_by').values(
-                'pst_id', 'pst_content', 'created_on', 'pst_filename', 'pst_filepath', 'created_by__id', 'created_by__first_name', 'created_by__last_name', 'created_by__photo_address', 'created_by__email').filter(workspace_id=pk)
+                'pst_id', 'pst_content', 'created_on', 'pst_filename', 'pst_filepath', 'created_by__id', 'created_by__first_name', 'created_by__last_name', 'created_by__photo_address', 'created_by__email').filter(workspace_id=pk).order_by('-created_on')
 
         elif action == 'p':  # to search using the post_id
             queryset = WorkspacePost.objects.filter(pst_id=pk)
-        print(queryset)
-        # posts = get_list_or_404(queryset,)
-        # serializer = WorkspacePostSerializer(posts, many=True)
-        # return Response(serializer.data)
-        return Response('Okay')
+        # print(queryset)
+        posts = get_list_or_404(queryset,)
+        serializer = WorkspacePostDataSerializer(posts, many=True)
+        return Response(serializer.data)
