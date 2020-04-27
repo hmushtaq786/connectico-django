@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.utils.translation import gettext, gettext_lazy as _
-from .models import User, Organization, Workspace, Project, Team, Task, Event, WorkspaceEvent, ProjectEvent, TeamEvent, Role, user_workspace_relation, user_project_relation, user_team_relation, Post, WorkspacePost, ProjectPost, TeamPost, Notification, Comment,  Message, InvitedUser
+from .models import User, Organization, Workspace, Project, Team, Task, Event, WorkspaceEvent, ProjectEvent, TeamEvent, Role, user_workspace_relation, user_project_relation, user_team_relation, Post, WorkspacePost, ProjectPost, TeamPost, Notification, Comment, WorkspacePostComment, Message, InvitedUser
 # Register your models here.
 
 UserAdmin.add_fieldsets = (
@@ -41,5 +41,6 @@ admin.site.register(ProjectPost)
 admin.site.register(TeamPost)
 admin.site.register(Notification)
 admin.site.register(Comment)
+admin.site.register(WorkspacePostComment)
 admin.site.register(Message)
 admin.site.register(InvitedUser)

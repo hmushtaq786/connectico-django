@@ -300,4 +300,14 @@ class Comment(models.Model):
     updated_on = models.DateTimeField(auto_now=True)
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
-    post_id = models.ForeignKey(Post, null=True, on_delete=models.SET_NULL)
+
+    def __str__(self):
+        return self.created_by.first_name + " -> " + self.c_content
+
+
+class WorkspacePostComment(Comment):
+    post_id = models.ForeignKey(
+        WorkspacePost, null=True, on_delete=models.SET_NULL)
+
+    def __str__(self):
+        return self.created_by.first_name + " -> " + self.c_content
