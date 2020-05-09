@@ -391,7 +391,7 @@ class WorkspacePostViewSet(viewsets.ModelViewSet):
             commentsData = dict()
             pid = post['pst_id']
             comment_queryset = WorkspacePostComment.objects.filter(
-                post_id=pid).order_by('-created_on')
+                post_id=pid).order_by('created_on')
             comments = list(comment_queryset)
             if not comments:
                 continue
@@ -406,10 +406,15 @@ class WorkspacePostViewSet(viewsets.ModelViewSet):
             x['comments'] = []
             for y in commentsList:
                 for z in y:
-                    print(x['pst_id'], z['post_id'])
                     if x['pst_id'] == z['post_id']:
                         x['comments'].append(z)
                     continue
         # data['posts'] = post_serializer.data
         # data['comments'] = commentsList
         return Response(posts)
+
+
+class WorkspacePostCommentViewSet(viewsets.ModelViewSet):
+    queryset = WorkspacePostComment.objects.all()
+    serializer_class = WorkspacePostCommentSerializer
+    authentication_classes = (TokenAuthentication,)
