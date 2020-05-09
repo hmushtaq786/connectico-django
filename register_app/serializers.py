@@ -115,6 +115,16 @@ class WorkspacePostDataSerializer(serializers.Serializer):
     created_by__email = serializers.EmailField()
 
 
+class WorkspacePostCommentDataSerializer(serializers.Serializer):
+    c_id = serializers.IntegerField()
+    c_content = serializers.CharField(max_length=200)
+    created_on = serializers.DateTimeField()
+    created_by__id = serializers.IntegerField()
+    created_by__first_name = serializers.CharField(max_length=200)
+    created_by__last_name = serializers.CharField(max_length=200)
+    created_by__photo_address = serializers.CharField(max_length=255)
+
+
 class WorkspacePostCommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = WorkspacePostComment

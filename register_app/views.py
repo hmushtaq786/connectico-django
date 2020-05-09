@@ -11,7 +11,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework.decorators import action, api_view, authentication_classes, permission_classes
 from .models import Organization, Workspace, Project, Team, InvitedUser, user_workspace_relation, Event, WorkspaceEvent, Post, WorkspacePost, WorkspacePostComment
-from .serializers import UserSerializer, OrganizationSerializer, UserMiniSerializer, WorkspaceSerializer, ProjectSerializer, TeamSerializer, InvitedUserSerializer, UserWorkspaceRelationsSerializer, EventSerializer, WorkspaceEventSerializer, WorkspaceMembersSerializer, PostSerializer, WorkspacePostSerializer, WorkspacePostDataSerializer, WorkspacePostCommentSerializer
+from .serializers import UserSerializer, OrganizationSerializer, UserMiniSerializer, WorkspaceSerializer, ProjectSerializer, TeamSerializer, InvitedUserSerializer, UserWorkspaceRelationsSerializer, EventSerializer, WorkspaceEventSerializer, WorkspaceMembersSerializer, PostSerializer, WorkspacePostSerializer, WorkspacePostDataSerializer, WorkspacePostCommentSerializer, WorkspacePostCommentDataSerializer
 from rest_framework.authentication import TokenAuthentication, BasicAuthentication
 from django.contrib.auth.hashers import make_password
 from django.db import connection
@@ -386,35 +386,54 @@ class WorkspacePostViewSet(viewsets.ModelViewSet):
         # print(queryset)
         posts = get_list_or_404(queryset,)
 
-        commentsList = list()
-        for post in posts:
-            commentsData = dict()
-            pid = post['pst_id']
-            comment_queryset = WorkspacePostComment.objects.filter(
-                post_id=pid).order_by('created_on')
-            comments = list(comment_queryset)
-            if not comments:
-                continue
-            # comments = get_list_or_404(comment_queryset,)
-            comment_serializer = WorkspacePostCommentSerializer(
-                comments, many=True)
-            commentsList.append(comment_serializer.data)
+        # commentsList = list()
+        # for post in posts:
+        #     commentsData = dict()
+        #     pid = post['pst_id']
+        #     comment_queryset = WorkspacePostComment.objects.filter(
+        #         post_id=pid).order_by('created_on')
+        #     comments = list(comment_queryset)
+        #     if not comments:
+        #         continue
+        #     # comments = get_list_or_404(comment_queryset,)
+        #     comment_serializer = WorkspacePostCommentSerializer(
+        #         comments, many=True)
+        #     commentsList.append(comment_serializer.data)
 
         post_serializer = WorkspacePostDataSerializer(posts, many=True)
-        data = dict()
-        for x in posts:
-            x['comments'] = []
-            for y in commentsList:
-                for z in y:
-                    if x['pst_id'] == z['post_id']:
-                        x['comments'].append(z)
-                    continue
+        # data = dict()
+        # for x in posts:
+        #     x['comments'] = []
+        #     for y in commentsList:
+        #         for z in y:
+        #             if x['pst_id'] == z['post_id']:
+        #                 x['comments'].append(z)
+        #             continue
         # data['posts'] = post_serializer.data
         # data['comments'] = commentsList
-        return Response(posts)
+
+        return Response(post_serializer.data)
 
 
 class WorkspacePostCommentViewSet(viewsets.ModelViewSet):
     queryset = WorkspacePostComment.objects.all()
     serializer_class = WorkspacePostCommentSerializer
     authentication_classes = (TokenAuthentication,)
+
+    def retrieve(self, request, pk=None):
+        action = pk[0]
+        pk = pk[1:]
+        if action == 'w':  # to search using the workspace_id
+            queryset = WorkspacePostComment.objects.filter(workspace_id=pk)
+
+        elif action == 'p':  # to search using the post_id
+            queryset = WorkspacePostComment.objects.select_related('created_by').values(
+                'c_id', 'c_content', 'created_on', 'created_by__id', 'created_by__first_name', 'created_by__last_name', 'created_by__photo_address').filter(post_id=pk).order_by('created_on')
+
+        try:
+            comments = get_list_or_404(queryset,)
+        except:
+            comments = None
+
+        serializer = WorkspacePostCommentDataSerializer(comments, many=True)
+        return Response(serializer.data)
