@@ -125,6 +125,23 @@ class WorkspacePostCommentDataSerializer(serializers.Serializer):
     created_by__photo_address = serializers.CharField(max_length=255)
 
 
+class UserProjectDataSerializer(serializers.Serializer):
+    upr_id = serializers.IntegerField()
+    u_id__id = serializers.IntegerField()
+    p_id__p_id = serializers.IntegerField()
+    p_id__p_name = serializers.CharField(max_length=30)
+    p_id__p_description = serializers.CharField(max_length=200)
+    p_id__p_start_date = serializers.DateField()
+    p_id__p_end_date = serializers.DateField()
+    p_id__p_status = serializers.CharField(max_length=10)
+    p_id__workspace_id__w_id = serializers.IntegerField()
+    p_id__workspace_id__w_name = serializers.CharField(max_length=30)
+    p_id__p_manager_id__id = serializers.IntegerField()
+    p_id__created_on = serializers.DateTimeField()
+    p_id__updated_on = serializers.DateTimeField()
+    p_id__created_by__id = serializers.IntegerField()
+
+
 class WorkspacePostCommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = WorkspacePostComment

@@ -216,6 +216,9 @@ class user_project_relation(models.Model):
     p_id = models.ForeignKey(Project, null=True, on_delete=models.SET_NULL)
     r_id = models.ForeignKey(Role, null=True, on_delete=models.SET_NULL)
 
+    def __str__(self):
+        return 'User '+str(self.u_id)+' '+str(self.u_id.id)+' is in Project '+str(self.p_id)
+
 
 class user_team_relation(models.Model):
     utr_id = models.AutoField(primary_key=True)

@@ -10,11 +10,15 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework.decorators import action, api_view, authentication_classes, permission_classes
-from .models import Organization, Workspace, Project, Team, InvitedUser, user_workspace_relation, Event, WorkspaceEvent, Post, WorkspacePost, WorkspacePostComment
-from .serializers import UserSerializer, OrganizationSerializer, UserMiniSerializer, WorkspaceSerializer, ProjectSerializer, TeamSerializer, InvitedUserSerializer, UserWorkspaceRelationsSerializer, EventSerializer, WorkspaceEventSerializer, WorkspaceMembersSerializer, PostSerializer, WorkspacePostSerializer, WorkspacePostDataSerializer, WorkspacePostCommentSerializer, WorkspacePostCommentDataSerializer
 from rest_framework.authentication import TokenAuthentication, BasicAuthentication
 from django.contrib.auth.hashers import make_password
 from django.db import connection
+
+###MODELS###
+from .models import Organization, Workspace, Project, Team, InvitedUser, user_workspace_relation, Event, WorkspaceEvent, Post, WorkspacePost, WorkspacePostComment, user_project_relation
+
+###SERIALIZERS###
+from .serializers import UserSerializer, OrganizationSerializer, UserMiniSerializer, WorkspaceSerializer, ProjectSerializer, TeamSerializer, InvitedUserSerializer, UserWorkspaceRelationsSerializer, EventSerializer, WorkspaceEventSerializer, WorkspaceMembersSerializer, PostSerializer, WorkspacePostSerializer, WorkspacePostDataSerializer, WorkspacePostCommentSerializer, WorkspacePostCommentDataSerializer, UserProjectDataSerializer
 
 # Create your views here.
 
@@ -150,6 +154,27 @@ class ProjectViewSet(viewsets.ModelViewSet):
 
         projects = get_list_or_404(queryset,)
         serializer = ProjectSerializer(projects, many=True)
+        return Response(serializer.data)
+
+
+class UserProjectViewSet(viewsets.ModelViewSet):
+    queryset = Project.objects.all()
+    serializer_class = ProjectSerializer
+    authentication_classes = (TokenAuthentication,)
+
+    def retrieve(self, request, pk=None):
+        action = pk[0]
+        pk = pk[1:]
+        if action == 'u':  # to search using the user_id
+            queryset = user_project_relation.objects.select_related(
+                'u_id', 'p_id').values(
+                'upr_id', 'u_id__id', 'p_id__p_id', 'p_id__p_name', 'p_id__p_description', 'p_id__p_start_date', 'p_id__p_end_date', 'p_id__p_status', 'p_id__workspace_id__w_id', 'p_id__workspace_id__w_name', 'p_id__p_manager_id__id', 'p_id__created_on', 'p_id__updated_on', 'p_id__created_by__id').filter(u_id=pk)
+
+        # elif action == 'p':  # to search using the project_id
+        #     queryset = Project.objects.filter(p_id=pk)
+
+        projects = get_list_or_404(queryset,)
+        serializer = UserProjectDataSerializer(projects, many=True)
         return Response(serializer.data)
 
 
