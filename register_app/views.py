@@ -15,10 +15,10 @@ from django.contrib.auth.hashers import make_password
 from django.db import connection
 
 ###MODELS###
-from .models import Organization, Workspace, Project, Team, InvitedUser, user_workspace_relation, Event, WorkspaceEvent, Post, WorkspacePost, WorkspacePostComment, user_project_relation
+from .models import Organization, Workspace, Project, Team, InvitedUser, user_workspace_relation, Event, WorkspaceEvent, ProjectEvent, Post, WorkspacePost, WorkspacePostComment, user_project_relation
 
 ###SERIALIZERS###
-from .serializers import UserSerializer, OrganizationSerializer, UserMiniSerializer, WorkspaceSerializer, ProjectSerializer, TeamSerializer, InvitedUserSerializer, UserWorkspaceRelationsSerializer, EventSerializer, WorkspaceEventSerializer, WorkspaceMembersSerializer, PostSerializer, WorkspacePostSerializer, WorkspacePostDataSerializer, WorkspacePostCommentSerializer, WorkspacePostCommentDataSerializer, UserProjectDataSerializer, ProjectUserDataSerializer
+from .serializers import UserSerializer, OrganizationSerializer, UserMiniSerializer, WorkspaceSerializer, ProjectSerializer, TeamSerializer, InvitedUserSerializer, UserWorkspaceRelationsSerializer, EventSerializer, WorkspaceEventSerializer, ProjectEventSerializer, WorkspaceMembersSerializer, PostSerializer, WorkspacePostSerializer, WorkspacePostDataSerializer, WorkspacePostCommentSerializer, WorkspacePostCommentDataSerializer, UserProjectDataSerializer, ProjectUserDataSerializer
 
 # Create your views here.
 
@@ -375,6 +375,25 @@ class WorkspaceEventViewSet(viewsets.ModelViewSet):
 
         events = get_list_or_404(queryset,)
         serializer = WorkspaceEventSerializer(events, many=True)
+        return Response(serializer.data)
+
+
+class ProjectEventViewSet(viewsets.ModelViewSet):
+    queryset = ProjectEvent.objects.all()
+    serializer_class = ProjectEventSerializer
+    authentication_classes = (TokenAuthentication,)
+
+    def retrieve(self, request, pk=None):
+        action = pk[0]
+        pk = pk[1:]
+        if action == 'p':  # to search using the project_id
+            queryset = ProjectEvent.objects.filter(project_id=pk)
+
+        elif action == 'e':  # to search using the event_id
+            queryset = ProjectEvent.objects.filter(e_id=pk)
+
+        events = get_list_or_404(queryset,)
+        serializer = ProjectEventSerializer(events, many=True)
         return Response(serializer.data)
 
 
