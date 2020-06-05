@@ -142,6 +142,17 @@ class UserProjectDataSerializer(serializers.Serializer):
     p_id__created_by__id = serializers.IntegerField()
 
 
+class ProjectUserDataSerializer(serializers.Serializer):
+    upr_id = serializers.IntegerField()
+    u_id__id = serializers.IntegerField()
+    u_id__username = serializers.CharField(max_length=200)
+    u_id__first_name = serializers.CharField(max_length=200)
+    u_id__last_name = serializers.CharField(max_length=200)
+    u_id__email = serializers.EmailField()
+    u_id__photo_address = serializers.CharField(max_length=200)
+    u_id__organization_id = serializers.IntegerField()
+
+
 class WorkspacePostCommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = WorkspacePostComment

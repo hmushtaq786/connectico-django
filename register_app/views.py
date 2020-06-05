@@ -18,7 +18,7 @@ from django.db import connection
 from .models import Organization, Workspace, Project, Team, InvitedUser, user_workspace_relation, Event, WorkspaceEvent, Post, WorkspacePost, WorkspacePostComment, user_project_relation
 
 ###SERIALIZERS###
-from .serializers import UserSerializer, OrganizationSerializer, UserMiniSerializer, WorkspaceSerializer, ProjectSerializer, TeamSerializer, InvitedUserSerializer, UserWorkspaceRelationsSerializer, EventSerializer, WorkspaceEventSerializer, WorkspaceMembersSerializer, PostSerializer, WorkspacePostSerializer, WorkspacePostDataSerializer, WorkspacePostCommentSerializer, WorkspacePostCommentDataSerializer, UserProjectDataSerializer
+from .serializers import UserSerializer, OrganizationSerializer, UserMiniSerializer, WorkspaceSerializer, ProjectSerializer, TeamSerializer, InvitedUserSerializer, UserWorkspaceRelationsSerializer, EventSerializer, WorkspaceEventSerializer, WorkspaceMembersSerializer, PostSerializer, WorkspacePostSerializer, WorkspacePostDataSerializer, WorkspacePostCommentSerializer, WorkspacePostCommentDataSerializer, UserProjectDataSerializer, ProjectUserDataSerializer
 
 # Create your views here.
 
@@ -169,12 +169,16 @@ class UserProjectViewSet(viewsets.ModelViewSet):
             queryset = user_project_relation.objects.select_related(
                 'u_id', 'p_id').values(
                 'upr_id', 'u_id__id', 'p_id__p_id', 'p_id__p_name', 'p_id__p_description', 'p_id__p_start_date', 'p_id__p_end_date', 'p_id__p_status', 'p_id__workspace_id__w_id', 'p_id__workspace_id__w_name', 'p_id__p_manager_id__id', 'p_id__created_on', 'p_id__updated_on', 'p_id__created_by__id').filter(u_id=pk)
+            projects = get_list_or_404(queryset,)
+            serializer = UserProjectDataSerializer(projects, many=True)
 
-        # elif action == 'p':  # to search using the project_id
-        #     queryset = Project.objects.filter(p_id=pk)
+        elif action == 'p':  # to search using the project_id
+            queryset = user_project_relation.objects.select_related(
+                'u_id', 'p_id').values(
+                'upr_id', 'u_id__id', 'u_id__username', 'u_id__first_name', 'u_id__last_name', 'u_id__email', 'u_id__photo_address', 'u_id__organization_id').filter(p_id=pk)
+            projects = get_list_or_404(queryset,)
+            serializer = ProjectUserDataSerializer(projects, many=True)
 
-        projects = get_list_or_404(queryset,)
-        serializer = UserProjectDataSerializer(projects, many=True)
         return Response(serializer.data)
 
 
@@ -462,3 +466,9 @@ class WorkspacePostCommentViewSet(viewsets.ModelViewSet):
 
         serializer = WorkspacePostCommentDataSerializer(comments, many=True)
         return Response(serializer.data)
+
+
+class TeamViewSet(viewsets.ModelViewSet):
+    queryset = Team.objects.all()
+    serializer_class = TeamSerializer
+    authentication_classes = (TokenAuthentication,)
