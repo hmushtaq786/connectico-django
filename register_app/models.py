@@ -167,7 +167,6 @@ class Event(models.Model):
 
 
 class WorkspaceEvent(Event):
-    # we_id = models.AutoField(primary_key=True)
     workspace_id = models.ForeignKey(
         Workspace, null=True, on_delete=models.SET_NULL, related_name='workspace_event_wid')
 
@@ -176,19 +175,19 @@ class WorkspaceEvent(Event):
 
 
 class ProjectEvent(Event):
-    pe_id = models.AutoField(primary_key=True)
-    event_id = models.ForeignKey(
-        Event, null=True, on_delete=models.SET_NULL, related_name='project_event_eid')
     project_id = models.ForeignKey(
         Project, null=True, on_delete=models.SET_NULL, related_name='project_event_pid')
 
+    def __str__(self):
+        return self.e_name
+
 
 class TeamEvent(Event):
-    te_id = models.AutoField(primary_key=True)
-    event_id = models.ForeignKey(
-        Event, null=True, on_delete=models.SET_NULL, related_name='team_event_eid')
     team_id = models.ForeignKey(
         Team, null=True, on_delete=models.SET_NULL, related_name='team_event_tid')
+
+    def __str__(self):
+        return self.e_name
 
 
 class Role(models.Model):
