@@ -18,7 +18,7 @@ from django.db import connection
 from .models import Organization, Workspace, Project, Team, InvitedUser, user_workspace_relation, Event, WorkspaceEvent, ProjectEvent, Post, WorkspacePost, WorkspacePostComment, user_project_relation
 
 ###SERIALIZERS###
-from .serializers import UserSerializer, OrganizationSerializer, UserMiniSerializer, WorkspaceSerializer, ProjectSerializer, TeamSerializer, InvitedUserSerializer, UserWorkspaceRelationsSerializer, EventSerializer, WorkspaceEventSerializer, ProjectEventSerializer, WorkspaceMembersSerializer, PostSerializer, WorkspacePostSerializer, WorkspacePostDataSerializer, WorkspacePostCommentSerializer, WorkspacePostCommentDataSerializer, UserProjectDataSerializer, ProjectUserDataSerializer
+from .serializers import UserSerializer, OrganizationSerializer, UserMiniSerializer, WorkspaceSerializer, ProjectSerializer, TeamSerializer, InvitedUserSerializer, UserWorkspaceRelationsSerializer, UserProjectRelationsSerializer, EventSerializer, WorkspaceEventSerializer, ProjectEventSerializer, WorkspaceMembersSerializer, PostSerializer, WorkspacePostSerializer, WorkspacePostDataSerializer, WorkspacePostCommentSerializer, WorkspacePostCommentDataSerializer, UserProjectDataSerializer, ProjectUserDataSerializer
 
 # Create your views here.
 
@@ -165,6 +165,9 @@ class UserProjectViewSet(viewsets.ModelViewSet):
     def retrieve(self, request, pk=None):
         action = pk[0]
         pk = pk[1:]
+
+        serializer = {'data': ''}
+
         if action == 'u':  # to search using the user_id
             queryset = user_project_relation.objects.select_related(
                 'u_id', 'p_id').values(
@@ -207,9 +210,9 @@ class WorkspaceViewSet(viewsets.ModelViewSet):
 
 
 class WorkspaceMembersViewSet(viewsets.ModelViewSet):
-    # queryset = get_user_model().objects.all()
-    # serializer_class = WorkspaceMembersSerializer
-    # authentication_classes = (TokenAuthentication,)
+    queryset = get_user_model().objects.all()
+    serializer_class = WorkspaceMembersSerializer
+    authentication_classes = (TokenAuthentication,)
 
     def retrieve(self, request, pk=None):
 
@@ -351,6 +354,36 @@ class UserWorkspaceRelationViewSet(viewsets.ModelViewSet):
             u_id=user_id, w_id=workspace_id)
         queryset.delete()
         return Response(queryset)
+
+
+class UserProjectRelationViewSet(viewsets.ModelViewSet):
+    queryset = user_project_relation.objects.all()
+    serializer_class = UserProjectRelationsSerializer
+    authentication_classes = (TokenAuthentication,)
+
+    def retrieve(self, request, pk=None):
+        action = pk[0]
+        pk = pk[1:]
+        if action == 'u':  # to search using the user_id
+            queryset = user_project_relation.objects.filter(u_id=pk)
+
+        elif action == 'p':  # to search using the project_id
+            queryset = user_project_relation.objects.filter(p_id=pk)
+
+        data = get_list_or_404(queryset,)
+        serializer = UserProjectRelationsSerializer(data, many=True)
+        return Response(serializer.data)
+
+    # def destroy(self, request, pk=None):
+    #     splited_key = pk.split('w')
+    #     user_id = splited_key[0]
+    #     user_id = int(user_id[1:])
+    #     workspace_id = int(splited_key[1])
+
+    #     queryset = user_workspace_relation.objects.filter(
+    #         u_id=user_id, w_id=workspace_id)
+    #     queryset.delete()
+    #     return Response(queryset)
 
 
 class EventViewSet(viewsets.ModelViewSet):

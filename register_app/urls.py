@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework import routers
-from .views import UserViewSet, OrganizationViewSet, ProjectViewSet, OrganizationUsersViewSet, WorkspaceViewSet, WorkspaceMembersViewSet, InviteMembers, OrganizationInvitedUserViewSet, FirstTimeUserAuth, UserWorkspaceRelationViewSet, EventViewSet, WorkspaceEventViewSet, PostViewSet, WorkspacePostViewSet, WorkspacePostCommentViewSet, UserProjectViewSet, TeamViewSet, ProjectEventViewSet
+from .views import UserViewSet, OrganizationViewSet, ProjectViewSet, OrganizationUsersViewSet, WorkspaceViewSet, WorkspaceMembersViewSet, InviteMembers, OrganizationInvitedUserViewSet, FirstTimeUserAuth, UserWorkspaceRelationViewSet, UserProjectRelationViewSet, EventViewSet, WorkspaceEventViewSet, PostViewSet, WorkspacePostViewSet, WorkspacePostCommentViewSet, UserProjectViewSet, TeamViewSet, ProjectEventViewSet
 from django.contrib.auth.forms import UserCreationForm
 
 
@@ -26,6 +26,7 @@ router.register('organization/events/project', ProjectEventViewSet)
 router.register('organization/events', EventViewSet)
 router.register('organization/invites', OrganizationInvitedUserViewSet)
 router.register('organization/workspace/add', UserWorkspaceRelationViewSet)
+router.register('organization/project/add', UserProjectRelationViewSet)
 
 # router.register('users/auth', FirstTimeUserAuth)
 # router.register('invite', InviteMembers, basename='Invite')
