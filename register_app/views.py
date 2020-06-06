@@ -374,16 +374,16 @@ class UserProjectRelationViewSet(viewsets.ModelViewSet):
         serializer = UserProjectRelationsSerializer(data, many=True)
         return Response(serializer.data)
 
-    # def destroy(self, request, pk=None):
-    #     splited_key = pk.split('w')
-    #     user_id = splited_key[0]
-    #     user_id = int(user_id[1:])
-    #     workspace_id = int(splited_key[1])
+    def destroy(self, request, pk=None):
+        splited_key = pk.split('p')
+        user_id = splited_key[0]
+        user_id = int(user_id[1:])
+        project_id = int(splited_key[1])
 
-    #     queryset = user_workspace_relation.objects.filter(
-    #         u_id=user_id, w_id=workspace_id)
-    #     queryset.delete()
-    #     return Response(queryset)
+        queryset = user_project_relation.objects.filter(
+            u_id=user_id, p_id=project_id)
+        queryset.delete()
+        return Response(queryset)
 
 
 class EventViewSet(viewsets.ModelViewSet):
