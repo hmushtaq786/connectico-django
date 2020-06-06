@@ -524,3 +524,16 @@ class TeamViewSet(viewsets.ModelViewSet):
     queryset = Team.objects.all()
     serializer_class = TeamSerializer
     authentication_classes = (TokenAuthentication,)
+
+    def retrieve(self, request, pk=None):
+        action = pk[0]
+        pk = pk[1:]
+        if action == 'p':  # to search using the project_id
+            queryset = Team.objects.filter(project_id=pk)
+
+        elif action == 't':  # to search using the team_id
+            queryset = Team.objects.filter(tm_id=pk)
+
+        teams = get_list_or_404(queryset,)
+        serializer = TeamSerializer(teams, many=True)
+        return Response(serializer.data)
