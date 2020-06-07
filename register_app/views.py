@@ -504,8 +504,6 @@ class ProjectPostViewSet(viewsets.ModelViewSet):
     def retrieve(self, request, pk=None):
         action = pk[0:2]
         pk = pk[2:]
-        print(action)
-        print(pk)
         if action == 'po':  # to search using the project_id
             queryset = ProjectPost.objects.select_related('created_by').values(
                 'pst_id', 'pst_content', 'created_on', 'pst_filename', 'pst_filepath', 'created_by__id', 'created_by__first_name', 'created_by__last_name', 'created_by__photo_address', 'created_by__email').filter(project_id=pk).order_by('-created_on')
@@ -514,7 +512,6 @@ class ProjectPostViewSet(viewsets.ModelViewSet):
             queryset = ProjectPost.objects.filter(pst_id=pk)
         # print(queryset)
         posts = get_list_or_404(queryset,)
-        print('created')
         post_serializer = PostDataSerializer(posts, many=True)
 
         return Response(post_serializer.data)
