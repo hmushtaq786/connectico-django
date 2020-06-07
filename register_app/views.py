@@ -514,6 +514,7 @@ class ProjectPostViewSet(viewsets.ModelViewSet):
             queryset = ProjectPost.objects.filter(pst_id=pk)
         # print(queryset)
         posts = get_list_or_404(queryset,)
+        print('created')
         post_serializer = PostDataSerializer(posts, many=True)
 
         return Response(post_serializer.data)
