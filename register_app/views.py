@@ -554,7 +554,7 @@ class ProjectPostCommentViewSet(viewsets.ModelViewSet):
             # cant perform this operation here
             queryset = ProjectPostComment.objects.filter(workspace_id=pk)
 
-        elif action == 'p':  # to search using the post_id
+        elif action == 'p':  # to search using post_id
             queryset = ProjectPostComment.objects.select_related('created_by').values(
                 'c_id', 'c_content', 'created_on', 'created_by__id', 'created_by__first_name', 'created_by__last_name', 'created_by__photo_address').filter(post_id=pk).order_by('created_on')
 
