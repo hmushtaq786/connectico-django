@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
-from .models import Organization, User, Workspace, Project, Team, InvitedUser, user_workspace_relation, user_project_relation, Event, WorkspaceEvent, ProjectEvent, Post, WorkspacePost, ProjectPost, WorkspacePostComment
+from .models import Organization, User, Workspace, Project, Team, InvitedUser, user_workspace_relation, user_project_relation, Event, WorkspaceEvent, ProjectEvent, Post, WorkspacePost, ProjectPost, WorkspacePostComment, ProjectPostComment
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -134,7 +134,7 @@ class PostDataSerializer(serializers.Serializer):
     created_by__email = serializers.EmailField()
 
 
-class WorkspacePostCommentDataSerializer(serializers.Serializer):
+class PostCommentDataSerializer(serializers.Serializer):
     c_id = serializers.IntegerField()
     c_content = serializers.CharField(max_length=200)
     created_on = serializers.DateTimeField()
@@ -175,4 +175,10 @@ class ProjectUserDataSerializer(serializers.Serializer):
 class WorkspacePostCommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = WorkspacePostComment
+        fields = '__all__'
+
+
+class ProjectPostCommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProjectPostComment
         fields = '__all__'

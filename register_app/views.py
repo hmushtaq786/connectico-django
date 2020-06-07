@@ -15,10 +15,10 @@ from django.contrib.auth.hashers import make_password
 from django.db import connection
 
 ###MODELS###
-from .models import Organization, Workspace, Project, Team, InvitedUser, user_workspace_relation, Event, WorkspaceEvent, ProjectEvent, Post, WorkspacePost, ProjectPost, WorkspacePostComment, user_project_relation
+from .models import Organization, Workspace, Project, Team, InvitedUser, user_workspace_relation, Event, WorkspaceEvent, ProjectEvent, Post, WorkspacePost, ProjectPost, WorkspacePostComment, ProjectPostComment, user_project_relation
 
 ###SERIALIZERS###
-from .serializers import UserSerializer, OrganizationSerializer, UserMiniSerializer, WorkspaceSerializer, ProjectSerializer, TeamSerializer, InvitedUserSerializer, UserWorkspaceRelationsSerializer, UserProjectRelationsSerializer, EventSerializer, WorkspaceEventSerializer, ProjectEventSerializer, WorkspaceMembersSerializer, PostSerializer, WorkspacePostSerializer, ProjectPostSerializer, PostDataSerializer, WorkspacePostCommentSerializer, WorkspacePostCommentDataSerializer, UserProjectDataSerializer, ProjectUserDataSerializer
+from .serializers import UserSerializer, OrganizationSerializer, UserMiniSerializer, WorkspaceSerializer, ProjectSerializer, TeamSerializer, InvitedUserSerializer, UserWorkspaceRelationsSerializer, UserProjectRelationsSerializer, EventSerializer, WorkspaceEventSerializer, ProjectEventSerializer, WorkspaceMembersSerializer, PostSerializer, WorkspacePostSerializer, ProjectPostSerializer, PostDataSerializer, WorkspacePostCommentSerializer, ProjectPostCommentSerializer, PostCommentDataSerializer, UserProjectDataSerializer, ProjectUserDataSerializer
 
 # Create your views here.
 
@@ -526,6 +526,7 @@ class WorkspacePostCommentViewSet(viewsets.ModelViewSet):
         action = pk[0]
         pk = pk[1:]
         if action == 'w':  # to search using the workspace_id
+            # cant perform this operation here
             queryset = WorkspacePostComment.objects.filter(workspace_id=pk)
 
         elif action == 'p':  # to search using the post_id
@@ -537,7 +538,32 @@ class WorkspacePostCommentViewSet(viewsets.ModelViewSet):
         except:
             comments = None
 
-        serializer = WorkspacePostCommentDataSerializer(comments, many=True)
+        serializer = PostCommentDataSerializer(comments, many=True)
+        return Response(serializer.data)
+
+
+class ProjectPostCommentViewSet(viewsets.ModelViewSet):
+    queryset = ProjectPostComment.objects.all()
+    serializer_class = ProjectPostCommentSerializer
+    authentication_classes = (TokenAuthentication,)
+
+    def retrieve(self, request, pk=None):
+        action = pk[0]
+        pk = pk[1:]
+        if action == 'w':  # to search using the workspace_id
+            # cant perform this operation here
+            queryset = ProjectPostComment.objects.filter(workspace_id=pk)
+
+        elif action == 'p':  # to search using the post_id
+            queryset = ProjectPostComment.objects.select_related('created_by').values(
+                'c_id', 'c_content', 'created_on', 'created_by__id', 'created_by__first_name', 'created_by__last_name', 'created_by__photo_address').filter(post_id=pk).order_by('created_on')
+
+        try:
+            comments = get_list_or_404(queryset,)
+        except:
+            comments = None
+
+        serializer = PostCommentDataSerializer(comments, many=True)
         return Response(serializer.data)
 
 

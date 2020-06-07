@@ -312,3 +312,17 @@ class WorkspacePostComment(Comment):
 
     def __str__(self):
         return self.created_by.first_name + " -> " + self.c_content
+
+class ProjectPostComment(Comment):
+    post_id = models.ForeignKey(
+        ProjectPost, null=True, on_delete=models.SET_NULL)
+
+    def __str__(self):
+        return self.created_by.first_name + " -> " + self.c_content
+
+class TeamPostComment(Comment):
+    post_id = models.ForeignKey(
+        TeamPost, null=True, on_delete=models.SET_NULL)
+
+    def __str__(self):
+        return self.created_by.first_name + " -> " + self.c_content
