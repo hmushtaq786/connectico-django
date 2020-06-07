@@ -15,10 +15,10 @@ from django.contrib.auth.hashers import make_password
 from django.db import connection
 
 ###MODELS###
-from .models import Organization, Workspace, Project, Team, InvitedUser, user_workspace_relation, Event, WorkspaceEvent, ProjectEvent, Post, WorkspacePost, WorkspacePostComment, user_project_relation
+from .models import Organization, Workspace, Project, Team, InvitedUser, user_workspace_relation, Event, WorkspaceEvent, ProjectEvent, Post, WorkspacePost, ProjectPost, WorkspacePostComment, user_project_relation
 
 ###SERIALIZERS###
-from .serializers import UserSerializer, OrganizationSerializer, UserMiniSerializer, WorkspaceSerializer, ProjectSerializer, TeamSerializer, InvitedUserSerializer, UserWorkspaceRelationsSerializer, UserProjectRelationsSerializer, EventSerializer, WorkspaceEventSerializer, ProjectEventSerializer, WorkspaceMembersSerializer, PostSerializer, WorkspacePostSerializer, WorkspacePostDataSerializer, WorkspacePostCommentSerializer, WorkspacePostCommentDataSerializer, UserProjectDataSerializer, ProjectUserDataSerializer
+from .serializers import UserSerializer, OrganizationSerializer, UserMiniSerializer, WorkspaceSerializer, ProjectSerializer, TeamSerializer, InvitedUserSerializer, UserWorkspaceRelationsSerializer, UserProjectRelationsSerializer, EventSerializer, WorkspaceEventSerializer, ProjectEventSerializer, WorkspaceMembersSerializer, PostSerializer, WorkspacePostSerializer, ProjectPostSerializer, PostDataSerializer, WorkspacePostCommentSerializer, WorkspacePostCommentDataSerializer, UserProjectDataSerializer, ProjectUserDataSerializer
 
 # Create your views here.
 
@@ -481,7 +481,7 @@ class WorkspacePostViewSet(viewsets.ModelViewSet):
         #         comments, many=True)
         #     commentsList.append(comment_serializer.data)
 
-        post_serializer = WorkspacePostDataSerializer(posts, many=True)
+        post_serializer = PostDataSerializer(posts, many=True)
         # data = dict()
         # for x in posts:
         #     x['comments'] = []
@@ -492,6 +492,29 @@ class WorkspacePostViewSet(viewsets.ModelViewSet):
         #             continue
         # data['posts'] = post_serializer.data
         # data['comments'] = commentsList
+
+        return Response(post_serializer.data)
+
+
+class ProjectPostViewSet(viewsets.ModelViewSet):
+    queryset = ProjectPost.objects.all()
+    serializer_class = ProjectPostSerializer
+    authentication_classes = (TokenAuthentication,)
+
+    def retrieve(self, request, pk=None):
+        action = pk[0:2]
+        pk = pk[2:]
+        print(action)
+        print(pk)
+        if action == 'po':  # to search using the project_id
+            queryset = ProjectPost.objects.select_related('created_by').values(
+                'pst_id', 'pst_content', 'created_on', 'pst_filename', 'pst_filepath', 'created_by__id', 'created_by__first_name', 'created_by__last_name', 'created_by__photo_address', 'created_by__email').filter(project_id=pk).order_by('-created_on')
+
+        elif action == 'ps':  # to search using the post_id
+            queryset = ProjectPost.objects.filter(pst_id=pk)
+        # print(queryset)
+        posts = get_list_or_404(queryset,)
+        post_serializer = PostDataSerializer(posts, many=True)
 
         return Response(post_serializer.data)
 

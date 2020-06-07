@@ -115,7 +115,13 @@ class WorkspacePostSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class WorkspacePostDataSerializer(serializers.Serializer):
+class ProjectPostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WorkspacePost
+        fields = '__all__'
+
+
+class PostDataSerializer(serializers.Serializer):
     pst_id = serializers.IntegerField()
     pst_content = serializers.CharField(max_length=200)
     created_on = serializers.DateTimeField()

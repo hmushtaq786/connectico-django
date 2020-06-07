@@ -282,9 +282,6 @@ class WorkspacePost(Post):
 
 
 class ProjectPost(Post):
-    pp_id = models.AutoField(primary_key=True)
-    post_id = models.ForeignKey(
-        Post, null=True, on_delete=models.SET_NULL, related_name='project_post_post_id')
     project_id = models.ForeignKey(
         Project, null=True, on_delete=models.SET_NULL, related_name='project_post_project_id')
 
