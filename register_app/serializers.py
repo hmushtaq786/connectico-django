@@ -69,11 +69,11 @@ class TeamSerializer(serializers.ModelSerializer):
         # fields = ('created_by_name',)
 
 
-class TeamSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Team
-        fields = '__all__'
-        # fields = ('created_by_name',)
+# class TeamSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Team
+#         fields = '__all__'
+#         # fields = ('created_by_name',)
 
 
 class InvitedUserSerializer(serializers.ModelSerializer):
@@ -163,6 +163,34 @@ class UserProjectDataSerializer(serializers.Serializer):
 
 class ProjectUserDataSerializer(serializers.Serializer):
     upr_id = serializers.IntegerField()
+    u_id__id = serializers.IntegerField()
+    u_id__username = serializers.CharField(max_length=200)
+    u_id__first_name = serializers.CharField(max_length=200)
+    u_id__last_name = serializers.CharField(max_length=200)
+    u_id__email = serializers.EmailField()
+    u_id__photo_address = serializers.CharField(max_length=200)
+    u_id__organization_id = serializers.IntegerField()
+
+
+class UserTeamDataSerializer(serializers.Serializer):
+    utr_id = serializers.IntegerField()
+    u_id__id = serializers.IntegerField()
+    t_id__tm_id = serializers.IntegerField()
+    t_id__tm_name = serializers.CharField(max_length=30)
+    t_id__tm_description = serializers.CharField(max_length=200)
+    t_id__tm_start_date = serializers.DateField()
+    t_id__tm_end_date = serializers.DateField()
+    t_id__project_id__p_id = serializers.IntegerField()
+    t_id__project_id__p_name = serializers.CharField(max_length=30)
+    t_id__project_id__workspace_id__w_id = serializers.IntegerField()
+    t_id__team_lead_id__id = serializers.IntegerField()
+    t_id__created_on = serializers.DateTimeField()
+    t_id__updated_on = serializers.DateTimeField()
+    t_id__created_by__id = serializers.IntegerField()
+
+
+class TeamUserDataSerializer(serializers.Serializer):
+    utr_id = serializers.IntegerField()
     u_id__id = serializers.IntegerField()
     u_id__username = serializers.CharField(max_length=200)
     u_id__first_name = serializers.CharField(max_length=200)

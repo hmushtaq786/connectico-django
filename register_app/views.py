@@ -15,10 +15,10 @@ from django.contrib.auth.hashers import make_password
 from django.db import connection
 
 ###MODELS###
-from .models import Organization, Workspace, Project, Team, InvitedUser, user_workspace_relation, Event, WorkspaceEvent, ProjectEvent, Post, WorkspacePost, ProjectPost, WorkspacePostComment, ProjectPostComment, user_project_relation
+from .models import Organization, Workspace, Project, Team, InvitedUser, user_workspace_relation, Event, WorkspaceEvent, ProjectEvent, Post, WorkspacePost, ProjectPost, WorkspacePostComment, ProjectPostComment, user_project_relation, user_team_relation
 
 ###SERIALIZERS###
-from .serializers import UserSerializer, OrganizationSerializer, UserMiniSerializer, WorkspaceSerializer, ProjectSerializer, TeamSerializer, InvitedUserSerializer, UserWorkspaceRelationsSerializer, UserProjectRelationsSerializer, EventSerializer, WorkspaceEventSerializer, ProjectEventSerializer, WorkspaceMembersSerializer, PostSerializer, WorkspacePostSerializer, ProjectPostSerializer, PostDataSerializer, WorkspacePostCommentSerializer, ProjectPostCommentSerializer, PostCommentDataSerializer, UserProjectDataSerializer, ProjectUserDataSerializer
+from .serializers import UserSerializer, OrganizationSerializer, UserMiniSerializer, WorkspaceSerializer, ProjectSerializer, TeamSerializer, InvitedUserSerializer, UserWorkspaceRelationsSerializer, UserProjectRelationsSerializer, EventSerializer, WorkspaceEventSerializer, ProjectEventSerializer, WorkspaceMembersSerializer, PostSerializer, WorkspacePostSerializer, ProjectPostSerializer, PostDataSerializer, WorkspacePostCommentSerializer, ProjectPostCommentSerializer, PostCommentDataSerializer, UserProjectDataSerializer, ProjectUserDataSerializer, UserTeamDataSerializer, TeamUserDataSerializer
 
 # Create your views here.
 
@@ -181,6 +181,34 @@ class UserProjectViewSet(viewsets.ModelViewSet):
                 'upr_id', 'u_id__id', 'u_id__username', 'u_id__first_name', 'u_id__last_name', 'u_id__email', 'u_id__photo_address', 'u_id__organization_id').filter(p_id=pk)
             projects = get_list_or_404(queryset,)
             serializer = ProjectUserDataSerializer(projects, many=True)
+
+        return Response(serializer.data)
+
+
+class UserTeamViewSet(viewsets.ModelViewSet):
+    queryset = Team.objects.all()
+    serializer_class = TeamSerializer
+    authentication_classes = (TokenAuthentication,)
+
+    def retrieve(self, request, pk=None):
+        action = pk[0]
+        pk = pk[1:]
+
+        serializer = {'data': ''}
+
+        if action == 'u':  # to search using the user_id
+            queryset = user_team_relation.objects.select_related(
+                'u_id', 't_id').values(
+                'utr_id', 'u_id__id', 't_id__tm_id', 't_id__tm_name', 't_id__tm_description', 't_id__tm_start_date', 't_id__tm_end_date', 't_id__project_id__p_id', 't_id__project_id__p_name', 't_id__project_id__workspace_id__w_id', 't_id__team_lead_id__id', 't_id__created_on', 't_id__updated_on', 't_id__created_by__id').filter(u_id=pk)
+            teams = get_list_or_404(queryset,)
+            serializer = UserTeamDataSerializer(teams, many=True)
+
+        elif action == 't':  # to search using the team_id
+            queryset = user_team_relation.objects.select_related(
+                'u_id', 't_id').values(
+                'utr_id', 'u_id__id', 'u_id__username', 'u_id__first_name', 'u_id__last_name', 'u_id__email', 'u_id__photo_address', 'u_id__organization_id').filter(t_id=pk)
+            teams = get_list_or_404(queryset,)
+            serializer = TeamUserDataSerializer(teams, many=True)
 
         return Response(serializer.data)
 
