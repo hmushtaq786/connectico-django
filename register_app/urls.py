@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework import routers
-from .views import UserViewSet, OrganizationViewSet, ProjectViewSet, OrganizationUsersViewSet, WorkspaceViewSet, WorkspaceMembersViewSet, InviteMembers, OrganizationInvitedUserViewSet, FirstTimeUserAuth, UserWorkspaceRelationViewSet, UserProjectRelationViewSet, EventViewSet, WorkspaceEventViewSet, PostViewSet, WorkspacePostViewSet, ProjectPostViewSet, WorkspacePostCommentViewSet, ProjectPostCommentViewSet, UserProjectViewSet, UserTeamViewSet, TeamViewSet, ProjectEventViewSet
+from .views import UserViewSet, OrganizationViewSet, ProjectViewSet, OrganizationUsersViewSet, WorkspaceViewSet, WorkspaceMembersViewSet, InviteMembers, OrganizationInvitedUserViewSet, FirstTimeUserAuth, UserWorkspaceRelationViewSet, UserProjectRelationViewSet, EventViewSet, WorkspaceEventViewSet, PostViewSet, WorkspacePostViewSet, ProjectPostViewSet, WorkspacePostCommentViewSet, ProjectPostCommentViewSet, UserProjectViewSet, UserTeamViewSet, TeamViewSet, ProjectEventViewSet, ProjectMembersViewSet, UserTeamRelationViewSet
 from django.contrib.auth.forms import UserCreationForm
 
 
@@ -20,6 +20,8 @@ router.register('organization/users/projects', UserProjectViewSet)
 router.register('organization/users/teams', UserTeamViewSet)
 router.register('organization/workspaces/members',
                 WorkspaceMembersViewSet, base_name='workspace_members')
+router.register('organization/projects/members',
+                ProjectMembersViewSet, base_name='project_members')
 router.register('organization/workspaces', WorkspaceViewSet)
 # router.register('organization/projects', WorkspaceViewSet)
 router.register('posts', PostViewSet)
@@ -31,6 +33,7 @@ router.register('organization/events', EventViewSet)
 router.register('organization/invites', OrganizationInvitedUserViewSet)
 router.register('organization/workspace/add', UserWorkspaceRelationViewSet)
 router.register('organization/project/add', UserProjectRelationViewSet)
+router.register('organization/team/add', UserTeamRelationViewSet)
 
 # router.register('users/auth', FirstTimeUserAuth)
 # router.register('invite', InviteMembers, basename='Invite')

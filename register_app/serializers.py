@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
-from .models import Organization, User, Workspace, Project, Team, InvitedUser, user_workspace_relation, user_project_relation, Event, WorkspaceEvent, ProjectEvent, Post, WorkspacePost, ProjectPost, WorkspacePostComment, ProjectPostComment
+from .models import Organization, User, Workspace, Project, Team, InvitedUser, user_workspace_relation, user_project_relation, user_team_relation, Event, WorkspaceEvent, ProjectEvent, Post, WorkspacePost, ProjectPost, WorkspacePostComment, ProjectPostComment
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -95,7 +95,13 @@ class UserProjectRelationsSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class WorkspaceMembersSerializer(serializers.Serializer):
+class UserTeamRelationsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = user_team_relation
+        fields = '__all__'
+
+
+class MembersSerializer(serializers.Serializer):
     u_id__id = serializers.IntegerField()
     u_id__first_name = serializers.CharField(max_length=200)
     u_id__last_name = serializers.CharField(max_length=200)
@@ -183,6 +189,8 @@ class UserTeamDataSerializer(serializers.Serializer):
     t_id__project_id__p_id = serializers.IntegerField()
     t_id__project_id__p_name = serializers.CharField(max_length=30)
     t_id__project_id__workspace_id__w_id = serializers.IntegerField()
+    t_id__project_id__workspace_id__w_name = serializers.CharField(
+        max_length=30)
     t_id__team_lead_id__id = serializers.IntegerField()
     t_id__created_on = serializers.DateTimeField()
     t_id__updated_on = serializers.DateTimeField()

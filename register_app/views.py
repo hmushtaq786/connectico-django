@@ -18,7 +18,7 @@ from django.db import connection
 from .models import Organization, Workspace, Project, Team, InvitedUser, user_workspace_relation, Event, WorkspaceEvent, ProjectEvent, Post, WorkspacePost, ProjectPost, WorkspacePostComment, ProjectPostComment, user_project_relation, user_team_relation
 
 ###SERIALIZERS###
-from .serializers import UserSerializer, OrganizationSerializer, UserMiniSerializer, WorkspaceSerializer, ProjectSerializer, TeamSerializer, InvitedUserSerializer, UserWorkspaceRelationsSerializer, UserProjectRelationsSerializer, EventSerializer, WorkspaceEventSerializer, ProjectEventSerializer, WorkspaceMembersSerializer, PostSerializer, WorkspacePostSerializer, ProjectPostSerializer, PostDataSerializer, WorkspacePostCommentSerializer, ProjectPostCommentSerializer, PostCommentDataSerializer, UserProjectDataSerializer, ProjectUserDataSerializer, UserTeamDataSerializer, TeamUserDataSerializer
+from .serializers import UserSerializer, OrganizationSerializer, UserMiniSerializer, WorkspaceSerializer, ProjectSerializer, TeamSerializer, InvitedUserSerializer, UserWorkspaceRelationsSerializer, UserProjectRelationsSerializer, EventSerializer, WorkspaceEventSerializer, ProjectEventSerializer, MembersSerializer, PostSerializer, WorkspacePostSerializer, ProjectPostSerializer, PostDataSerializer, WorkspacePostCommentSerializer, ProjectPostCommentSerializer, PostCommentDataSerializer, UserProjectDataSerializer, ProjectUserDataSerializer, UserTeamDataSerializer, TeamUserDataSerializer, UserTeamRelationsSerializer
 
 # Create your views here.
 
@@ -199,7 +199,7 @@ class UserTeamViewSet(viewsets.ModelViewSet):
         if action == 'u':  # to search using the user_id
             queryset = user_team_relation.objects.select_related(
                 'u_id', 't_id').values(
-                'utr_id', 'u_id__id', 't_id__tm_id', 't_id__tm_name', 't_id__tm_description', 't_id__tm_start_date', 't_id__tm_end_date', 't_id__project_id__p_id', 't_id__project_id__p_name', 't_id__project_id__workspace_id__w_id', 't_id__team_lead_id__id', 't_id__created_on', 't_id__updated_on', 't_id__created_by__id').filter(u_id=pk)
+                'utr_id', 'u_id__id', 't_id__tm_id', 't_id__tm_name', 't_id__tm_description', 't_id__tm_start_date', 't_id__tm_end_date', 't_id__project_id__p_id', 't_id__project_id__p_name', 't_id__project_id__workspace_id__w_id', 't_id__project_id__workspace_id__w_name', 't_id__team_lead_id__id', 't_id__created_on', 't_id__updated_on', 't_id__created_by__id').filter(u_id=pk)
             teams = get_list_or_404(queryset,)
             serializer = UserTeamDataSerializer(teams, many=True)
 
@@ -239,7 +239,7 @@ class WorkspaceViewSet(viewsets.ModelViewSet):
 
 class WorkspaceMembersViewSet(viewsets.ModelViewSet):
     queryset = get_user_model().objects.all()
-    serializer_class = WorkspaceMembersSerializer
+    serializer_class = MembersSerializer
     authentication_classes = (TokenAuthentication,)
 
     def retrieve(self, request, pk=None):
@@ -249,7 +249,20 @@ class WorkspaceMembersViewSet(viewsets.ModelViewSet):
 
         # print(queryset.query)
 
-        serializer = WorkspaceMembersSerializer(queryset, many=True)
+        serializer = MembersSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+
+class ProjectMembersViewSet(viewsets.ModelViewSet):
+    queryset = get_user_model().objects.all()
+    serializer_class = MembersSerializer
+    authentication_classes = (TokenAuthentication,)
+
+    def retrieve(self, request, pk=None):
+        queryset = user_project_relation.objects.select_related(
+            'p_id', 'u_id').values('u_id__id', 'u_id__first_name', 'u_id__last_name', 'u_id__photo_address', 'u_id__email').filter(p_id=pk)
+
+        serializer = MembersSerializer(queryset, many=True)
         return Response(serializer.data)
 
 
@@ -414,6 +427,36 @@ class UserProjectRelationViewSet(viewsets.ModelViewSet):
         return Response(queryset)
 
 
+class UserTeamRelationViewSet(viewsets.ModelViewSet):
+    queryset = user_team_relation.objects.all()
+    serializer_class = UserTeamRelationsSerializer
+    authentication_classes = (TokenAuthentication,)
+
+    def retrieve(self, request, pk=None):
+        action = pk[0]
+        pk = pk[1:]
+        if action == 'u':  # to search using the user_id
+            queryset = user_team_relation.objects.filter(u_id=pk)
+
+        elif action == 't':  # to search using the team_id
+            queryset = user_team_relation.objects.filter(t_id=pk)
+
+        data = get_list_or_404(queryset,)
+        serializer = UserTeamRelationsSerializer(data, many=True)
+        return Response(serializer.data)
+
+    def destroy(self, request, pk=None):
+        splited_key = pk.split('t')
+        user_id = splited_key[0]
+        user_id = int(user_id[1:])
+        team_id = int(splited_key[1])
+
+        queryset = user_team_relation.objects.filter(
+            u_id=user_id, t_id=team_id)
+        queryset.delete()
+        return Response(queryset)
+
+
 class EventViewSet(viewsets.ModelViewSet):
     queryset = Event.objects.all()
     serializer_class = EventSerializer
@@ -476,7 +519,7 @@ class WorkspacePostViewSet(viewsets.ModelViewSet):
 
 #         # print(queryset.query)
 
-#         serializer = WorkspaceMembersSerializer(queryset, many=True)
+#         serializer = MembersSerializer(queryset, many=True)
 #         return Response(serializer.data)
 
     def retrieve(self, request, pk=None):
