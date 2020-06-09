@@ -171,7 +171,7 @@ class UserProjectViewSet(viewsets.ModelViewSet):
         if action == 'u':  # to search using the user_id
             queryset = user_project_relation.objects.select_related(
                 'u_id', 'p_id').values(
-                'upr_id', 'u_id__id', 'p_id__p_id', 'p_id__p_name', 'p_id__p_description', 'p_id__p_start_date', 'p_id__p_end_date', 'p_id__p_status', 'p_id__workspace_id__w_id', 'p_id__workspace_id__w_name', 'p_id__p_manager_id__id', 'p_id__created_on', 'p_id__updated_on', 'p_id__created_by__id').filter(u_id=pk)
+                'upr_id', 'u_id__id', 'p_id__p_id', 'p_id__p_name', 'p_id__p_description', 'p_id__p_start_date', 'p_id__p_end_date', 'p_id__p_status', 'p_id__workspace_id__w_id', 'p_id__workspace_id__w_name', 'p_id__p_manager_id__id', 'p_id__created_on', 'p_id__updated_on', 'p_id__created_by__id').filter(u_id=pk).order_by('p_id')
             projects = get_list_or_404(queryset,)
             serializer = UserProjectDataSerializer(projects, many=True)
 
@@ -199,7 +199,7 @@ class UserTeamViewSet(viewsets.ModelViewSet):
         if action == 'u':  # to search using the user_id
             queryset = user_team_relation.objects.select_related(
                 'u_id', 't_id').values(
-                'utr_id', 'u_id__id', 't_id__tm_id', 't_id__tm_name', 't_id__tm_description', 't_id__tm_start_date', 't_id__tm_end_date', 't_id__project_id__p_id', 't_id__project_id__p_name', 't_id__project_id__workspace_id__w_id', 't_id__project_id__workspace_id__w_name', 't_id__team_lead_id__id', 't_id__created_on', 't_id__updated_on', 't_id__created_by__id').filter(u_id=pk)
+                'utr_id', 'u_id__id', 't_id__tm_id', 't_id__tm_name', 't_id__tm_description', 't_id__tm_start_date', 't_id__tm_end_date', 't_id__project_id__p_id', 't_id__project_id__p_name', 't_id__project_id__workspace_id__w_id', 't_id__project_id__workspace_id__w_name', 't_id__team_lead_id__id', 't_id__created_on', 't_id__updated_on', 't_id__created_by__id').filter(u_id=pk).order_by('t_id')
             teams = get_list_or_404(queryset,)
             serializer = UserTeamDataSerializer(teams, many=True)
 
