@@ -15,10 +15,10 @@ from django.contrib.auth.hashers import make_password
 from django.db import connection
 
 ###MODELS###
-from .models import Organization, Workspace, Project, Team, InvitedUser, user_workspace_relation, Event, WorkspaceEvent, ProjectEvent, Post, WorkspacePost, ProjectPost, WorkspacePostComment, ProjectPostComment, user_project_relation, user_team_relation
+from .models import Organization, Workspace, Project, Team, InvitedUser, user_workspace_relation, Event, WorkspaceEvent, ProjectEvent, TeamEvent, Post, WorkspacePost, ProjectPost, WorkspacePostComment, ProjectPostComment, user_project_relation, user_team_relation
 
 ###SERIALIZERS###
-from .serializers import UserSerializer, OrganizationSerializer, UserMiniSerializer, WorkspaceSerializer, ProjectSerializer, TeamSerializer, InvitedUserSerializer, UserWorkspaceRelationsSerializer, UserProjectRelationsSerializer, EventSerializer, WorkspaceEventSerializer, ProjectEventSerializer, MembersSerializer, PostSerializer, WorkspacePostSerializer, ProjectPostSerializer, PostDataSerializer, WorkspacePostCommentSerializer, ProjectPostCommentSerializer, PostCommentDataSerializer, UserProjectDataSerializer, ProjectUserDataSerializer, UserTeamDataSerializer, TeamUserDataSerializer, UserTeamRelationsSerializer
+from .serializers import UserSerializer, OrganizationSerializer, UserMiniSerializer, WorkspaceSerializer, ProjectSerializer, TeamSerializer, InvitedUserSerializer, UserWorkspaceRelationsSerializer, UserProjectRelationsSerializer, EventSerializer, WorkspaceEventSerializer, ProjectEventSerializer, TeamEventSerializer, MembersSerializer, PostSerializer, WorkspacePostSerializer, ProjectPostSerializer, PostDataSerializer, WorkspacePostCommentSerializer, ProjectPostCommentSerializer, PostCommentDataSerializer, UserProjectDataSerializer, ProjectUserDataSerializer, UserTeamDataSerializer, TeamUserDataSerializer, UserTeamRelationsSerializer
 
 # Create your views here.
 
@@ -498,6 +498,25 @@ class ProjectEventViewSet(viewsets.ModelViewSet):
 
         events = get_list_or_404(queryset,)
         serializer = ProjectEventSerializer(events, many=True)
+        return Response(serializer.data)
+
+
+class TeamEventViewSet(viewsets.ModelViewSet):
+    queryset = TeamEvent.objects.all()
+    serializer_class = TeamEventSerializer
+    authentication_classes = (TokenAuthentication,)
+
+    def retrieve(self, request, pk=None):
+        action = pk[0]
+        pk = pk[1:]
+        if action == 't':  # to search using the team_id
+            queryset = TeamEvent.objects.filter(team_id=pk)
+
+        elif action == 'e':  # to search using the event_id
+            queryset = TeamEvent.objects.filter(e_id=pk)
+
+        events = get_list_or_404(queryset,)
+        serializer = TeamEventSerializer(events, many=True)
         return Response(serializer.data)
 
 

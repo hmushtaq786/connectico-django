@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
-from .models import Organization, User, Workspace, Project, Team, InvitedUser, user_workspace_relation, user_project_relation, user_team_relation, Event, WorkspaceEvent, ProjectEvent, Post, WorkspacePost, ProjectPost, WorkspacePostComment, ProjectPostComment
+from .models import Organization, User, Workspace, Project, Team, InvitedUser, user_workspace_relation, user_project_relation, user_team_relation, Event, WorkspaceEvent, ProjectEvent, TeamEvent, Post, WorkspacePost, ProjectPost, WorkspacePostComment, ProjectPostComment
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -58,6 +58,13 @@ class WorkspaceEventSerializer(serializers.ModelSerializer):
 class ProjectEventSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProjectEvent
+        fields = '__all__'
+        # fields = ('created_by_name',)
+
+
+class TeamEventSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TeamEvent
         fields = '__all__'
         # fields = ('created_by_name',)
 
