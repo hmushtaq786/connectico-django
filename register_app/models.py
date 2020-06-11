@@ -290,9 +290,6 @@ class ProjectPost(Post):
 
 
 class TeamPost(Post):
-    tp_id = models.AutoField(primary_key=True)
-    post_id = models.ForeignKey(
-        Post, null=True, on_delete=models.SET_NULL, related_name='team_post_pid')
     team_id = models.ForeignKey(
         Team, null=True, on_delete=models.SET_NULL, related_name='team_post_tid')
 
@@ -326,6 +323,7 @@ class ProjectPostComment(Comment):
 
 
 class TeamPostComment(Comment):
+    # name = models.CharField(max_length=100, null=True)
     post_id = models.ForeignKey(
         TeamPost, null=True, on_delete=models.SET_NULL)
 

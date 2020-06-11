@@ -15,10 +15,10 @@ from django.contrib.auth.hashers import make_password
 from django.db import connection
 
 ###MODELS###
-from .models import Organization, Workspace, Project, Team, Task, InvitedUser, user_workspace_relation, Event, WorkspaceEvent, ProjectEvent, TeamEvent, Post, WorkspacePost, ProjectPost, WorkspacePostComment, ProjectPostComment, user_project_relation, user_team_relation
+from .models import Organization, Workspace, Project, Team, Task, InvitedUser, user_workspace_relation, Event, WorkspaceEvent, ProjectEvent, TeamEvent, Post, WorkspacePost, ProjectPost, TeamPost, WorkspacePostComment, ProjectPostComment, TeamPostComment, user_project_relation, user_team_relation
 
 ###SERIALIZERS###
-from .serializers import UserSerializer, OrganizationSerializer, UserMiniSerializer, WorkspaceSerializer, ProjectSerializer, TeamSerializer, InvitedUserSerializer, UserWorkspaceRelationsSerializer, UserProjectRelationsSerializer, EventSerializer, WorkspaceEventSerializer, ProjectEventSerializer, TeamEventSerializer, MembersSerializer, PostSerializer, WorkspacePostSerializer, ProjectPostSerializer, PostDataSerializer, WorkspacePostCommentSerializer, ProjectPostCommentSerializer, PostCommentDataSerializer, UserProjectDataSerializer, ProjectUserDataSerializer, UserTeamDataSerializer, TeamUserDataSerializer, UserTeamRelationsSerializer, TaskSerializer
+from .serializers import UserSerializer, OrganizationSerializer, UserMiniSerializer, WorkspaceSerializer, ProjectSerializer, TeamSerializer, InvitedUserSerializer, UserWorkspaceRelationsSerializer, UserProjectRelationsSerializer, EventSerializer, WorkspaceEventSerializer, ProjectEventSerializer, TeamEventSerializer, MembersSerializer, PostSerializer, WorkspacePostSerializer, ProjectPostSerializer, TeamPostSerializer, PostDataSerializer, WorkspacePostCommentSerializer, ProjectPostCommentSerializer, TeamPostCommentSerializer, PostCommentDataSerializer, UserProjectDataSerializer, ProjectUserDataSerializer, UserTeamDataSerializer, TeamUserDataSerializer, UserTeamRelationsSerializer, TaskSerializer
 
 # Create your views here.
 
@@ -607,6 +607,27 @@ class ProjectPostViewSet(viewsets.ModelViewSet):
         return Response(post_serializer.data)
 
 
+class TeamPostViewSet(viewsets.ModelViewSet):
+    queryset = TeamPost.objects.all()
+    serializer_class = TeamPostSerializer
+    authentication_classes = (TokenAuthentication,)
+
+    def retrieve(self, request, pk=None):
+        action = pk[0]
+        pk = pk[1:]
+        if action == 't':  # to search using the team_id
+            queryset = TeamPost.objects.select_related('created_by').values(
+                'pst_id', 'pst_content', 'created_on', 'pst_filename', 'pst_filepath', 'created_by__id', 'created_by__first_name', 'created_by__last_name', 'created_by__photo_address', 'created_by__email').filter(team_id=pk).order_by('-created_on')
+
+        elif action == 'p':  # to search using the post_id
+            queryset = TeamPost.objects.filter(pst_id=pk)
+        # print(queryset)
+        posts = get_list_or_404(queryset,)
+        post_serializer = PostDataSerializer(posts, many=True)
+
+        return Response(post_serializer.data)
+
+
 class WorkspacePostCommentViewSet(viewsets.ModelViewSet):
     queryset = WorkspacePostComment.objects.all()
     serializer_class = WorkspacePostCommentSerializer
@@ -646,6 +667,31 @@ class ProjectPostCommentViewSet(viewsets.ModelViewSet):
 
         elif action == 'p':  # to search using post_id
             queryset = ProjectPostComment.objects.select_related('created_by').values(
+                'c_id', 'c_content', 'created_on', 'created_by__id', 'created_by__first_name', 'created_by__last_name', 'created_by__photo_address').filter(post_id=pk).order_by('created_on')
+
+        try:
+            comments = get_list_or_404(queryset,)
+        except:
+            comments = None
+
+        serializer = PostCommentDataSerializer(comments, many=True)
+        return Response(serializer.data)
+
+
+class TeamPostCommentViewSet(viewsets.ModelViewSet):
+    queryset = TeamPostComment.objects.all()
+    serializer_class = TeamPostCommentSerializer
+    authentication_classes = (TokenAuthentication,)
+
+    def retrieve(self, request, pk=None):
+        action = pk[0]
+        pk = pk[1:]
+        if action == 't':  # to search using the team_id
+            # cant perform this operation here
+            queryset = TeamPostComment.objects.filter(team_id=pk)
+
+        elif action == 'p':  # to search using post_id
+            queryset = TeamPostComment.objects.select_related('created_by').values(
                 'c_id', 'c_content', 'created_on', 'created_by__id', 'created_by__first_name', 'created_by__last_name', 'created_by__photo_address').filter(post_id=pk).order_by('created_on')
 
         try:

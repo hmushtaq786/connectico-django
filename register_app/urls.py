@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework import routers
-from .views import UserViewSet, OrganizationViewSet, ProjectViewSet, OrganizationUsersViewSet, WorkspaceViewSet, WorkspaceMembersViewSet, InviteMembers, OrganizationInvitedUserViewSet, FirstTimeUserAuth, UserWorkspaceRelationViewSet, UserProjectRelationViewSet, EventViewSet, WorkspaceEventViewSet, PostViewSet, WorkspacePostViewSet, ProjectPostViewSet, TaskViewSet, WorkspacePostCommentViewSet, ProjectPostCommentViewSet, UserProjectViewSet, UserTeamViewSet, TeamViewSet, ProjectEventViewSet, ProjectMembersViewSet, UserTeamRelationViewSet, TeamEventViewSet
+from .views import UserViewSet, OrganizationViewSet, ProjectViewSet, OrganizationUsersViewSet, WorkspaceViewSet, WorkspaceMembersViewSet, InviteMembers, OrganizationInvitedUserViewSet, FirstTimeUserAuth, UserWorkspaceRelationViewSet, UserProjectRelationViewSet, EventViewSet, WorkspaceEventViewSet, PostViewSet, WorkspacePostViewSet, ProjectPostViewSet, TaskViewSet, WorkspacePostCommentViewSet, ProjectPostCommentViewSet, UserProjectViewSet, UserTeamViewSet, TeamViewSet, ProjectEventViewSet, ProjectMembersViewSet, UserTeamRelationViewSet, TeamEventViewSet, TeamPostViewSet, TeamPostCommentViewSet
 from django.contrib.auth.forms import UserCreationForm
 
 
@@ -10,10 +10,13 @@ router.register('organizations', OrganizationViewSet)
 router.register('organization/members', OrganizationUsersViewSet)
 router.register('organization/workspaces/posts', WorkspacePostViewSet)
 router.register('organization/projects/posts', ProjectPostViewSet)
+router.register('organization/teams/posts', TeamPostViewSet)
 router.register('organization/workspaces/comments',
                 WorkspacePostCommentViewSet)
 router.register('organization/projects/comments',
                 ProjectPostCommentViewSet)
+router.register('organization/teams/comments',
+                TeamPostCommentViewSet)
 router.register('organization/workspaces/projects', ProjectViewSet)
 router.register('organization/workspaces/teams', TeamViewSet)
 router.register('organization/workspaces/tasks', TaskViewSet)
