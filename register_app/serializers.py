@@ -243,3 +243,17 @@ class TeamPostCommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = TeamPostComment
         fields = '__all__'
+
+
+class TestSerializer(serializers.Serializer):
+    p_id = serializers.IntegerField()
+    p_name = serializers.CharField(max_length=200)
+    workspace_id__organization_id__id = serializers.IntegerField()
+    workspace_id__w_id = serializers.IntegerField()
+
+
+class AnotherTestSerializer(serializers.Serializer):
+    tm_id = serializers.IntegerField()
+    tm_name = serializers.CharField(max_length=200)
+    project_id__workspace_id__organization_id__id = serializers.IntegerField()
+    project_id__workspace_id__w_id = serializers.IntegerField()

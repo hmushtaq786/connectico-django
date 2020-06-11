@@ -18,7 +18,7 @@ from django.db import connection
 from .models import Organization, Workspace, Project, Team, Task, InvitedUser, user_workspace_relation, Event, WorkspaceEvent, ProjectEvent, TeamEvent, Post, WorkspacePost, ProjectPost, TeamPost, WorkspacePostComment, ProjectPostComment, TeamPostComment, user_project_relation, user_team_relation
 
 ###SERIALIZERS###
-from .serializers import UserSerializer, OrganizationSerializer, UserMiniSerializer, WorkspaceSerializer, ProjectSerializer, TeamSerializer, InvitedUserSerializer, UserWorkspaceRelationsSerializer, UserProjectRelationsSerializer, EventSerializer, WorkspaceEventSerializer, ProjectEventSerializer, TeamEventSerializer, MembersSerializer, PostSerializer, WorkspacePostSerializer, ProjectPostSerializer, TeamPostSerializer, PostDataSerializer, WorkspacePostCommentSerializer, ProjectPostCommentSerializer, TeamPostCommentSerializer, PostCommentDataSerializer, UserProjectDataSerializer, ProjectUserDataSerializer, UserTeamDataSerializer, TeamUserDataSerializer, UserTeamRelationsSerializer, TaskSerializer
+from .serializers import UserSerializer, OrganizationSerializer, UserMiniSerializer, WorkspaceSerializer, ProjectSerializer, TeamSerializer, InvitedUserSerializer, UserWorkspaceRelationsSerializer, UserProjectRelationsSerializer, EventSerializer, WorkspaceEventSerializer, ProjectEventSerializer, TeamEventSerializer, MembersSerializer, PostSerializer, WorkspacePostSerializer, ProjectPostSerializer, TeamPostSerializer, PostDataSerializer, WorkspacePostCommentSerializer, ProjectPostCommentSerializer, TeamPostCommentSerializer, PostCommentDataSerializer, UserProjectDataSerializer, ProjectUserDataSerializer, UserTeamDataSerializer, TeamUserDataSerializer, UserTeamRelationsSerializer, TaskSerializer, TestSerializer, AnotherTestSerializer
 
 # Create your views here.
 
@@ -182,6 +182,13 @@ class UserProjectViewSet(viewsets.ModelViewSet):
             projects = get_list_or_404(queryset,)
             serializer = ProjectUserDataSerializer(projects, many=True)
 
+        elif action == 'o':  # to search using the org_id
+            queryset = Project.objects.select_related(
+                'workspace_id').values(
+                'p_id', 'p_name', 'workspace_id__w_id', 'workspace_id__organization_id__id').filter(workspace_id__organization_id__id=pk)
+            projects = get_list_or_404(queryset,)
+            serializer = TestSerializer(projects, many=True)
+
         return Response(serializer.data)
 
 
@@ -209,6 +216,13 @@ class UserTeamViewSet(viewsets.ModelViewSet):
                 'utr_id', 'u_id__id', 'u_id__username', 'u_id__first_name', 'u_id__last_name', 'u_id__email', 'u_id__photo_address', 'u_id__organization_id').filter(t_id=pk)
             teams = get_list_or_404(queryset,)
             serializer = TeamUserDataSerializer(teams, many=True)
+
+        elif action == 'o':  # to search using the org_id
+            queryset = Team.objects.select_related(
+                'project_id').values(
+                'tm_id', 'tm_name', 'project_id__workspace_id__w_id', 'project_id__workspace_id__organization_id__id').filter(project_id__workspace_id__organization_id__id=pk)
+            projects = get_list_or_404(queryset,)
+            serializer = AnotherTestSerializer(projects, many=True)
 
         return Response(serializer.data)
 
