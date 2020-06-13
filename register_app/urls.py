@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework import routers
-from .views import UserViewSet, OrganizationViewSet, ProjectViewSet, OrganizationUsersViewSet, WorkspaceViewSet, WorkspaceMembersViewSet, InviteMembers, OrganizationInvitedUserViewSet, FirstTimeUserAuth, UserWorkspaceRelationViewSet, UserProjectRelationViewSet, EventViewSet, WorkspaceEventViewSet, PostViewSet, WorkspacePostViewSet, ProjectPostViewSet, TaskViewSet, WorkspacePostCommentViewSet, ProjectPostCommentViewSet, UserProjectViewSet, UserTeamViewSet, TeamViewSet, ProjectEventViewSet, ProjectMembersViewSet, UserTeamRelationViewSet, TeamEventViewSet, TeamPostViewSet, TeamPostCommentViewSet
+from .views import UserViewSet, OrganizationViewSet, ProjectViewSet, OrganizationUsersViewSet, WorkspaceViewSet, WorkspaceMembersViewSet, InviteMembers, OrganizationInvitedUserViewSet, FirstTimeUserAuth, UserWorkspaceRelationViewSet, UserProjectRelationViewSet, EventViewSet, WorkspaceEventViewSet, PostViewSet, WorkspacePostViewSet, ProjectPostViewSet, TaskViewSet, WorkspacePostCommentViewSet, ProjectPostCommentViewSet, UserProjectViewSet, UserTeamViewSet, TeamViewSet, ProjectEventViewSet, ProjectMembersViewSet, UserTeamRelationViewSet, TeamEventViewSet, TeamPostViewSet, TeamPostCommentViewSet, UserWorkspaceViewSet, MessageViewSet
 from django.contrib.auth.forms import UserCreationForm
 
 
@@ -20,8 +20,10 @@ router.register('organization/teams/comments',
 router.register('organization/workspaces/projects', ProjectViewSet)
 router.register('organization/workspaces/teams', TeamViewSet)
 router.register('organization/workspaces/tasks', TaskViewSet)
+router.register('organization/users/workspaces', UserWorkspaceViewSet)
 router.register('organization/users/projects', UserProjectViewSet)
 router.register('organization/users/teams', UserTeamViewSet)
+router.register('organization/users/messages', MessageViewSet)
 router.register('organization/workspaces/members',
                 WorkspaceMembersViewSet, base_name='workspace_members')
 router.register('organization/projects/members',

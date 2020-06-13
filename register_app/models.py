@@ -232,15 +232,27 @@ class user_team_relation(models.Model):
         return 'User '+str(self.u_id)+' '+str(self.u_id.id)+' is in Team '+str(self.t_id)
 
 
+class Conversation(models.Model):
+    c_id = models.AutoField(primary_key=True)
+    channel_name = models.CharField(max_length=50)
+    first_user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL, related_name='first')
+    second_user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL, related_name='second')
+    created_on = models.DateTimeField(auto_now_add=True)
+
+
 class Message(models.Model):
     m_id = models.AutoField(primary_key=True)
     m_content = models.TextField(verbose_name='Content')
-    sender_id = models.ForeignKey(
-        settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL, related_name='sender')
-    receiver_id = models.ForeignKey(
-        settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL, related_name='receiver')
+    conversation_id = models.ForeignKey(
+        Conversation, null=True, on_delete=models.SET_NULL)
+    # sender_id = models.ForeignKey(
+    #     settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL, related_name='sender')
+    # receiver_id = models.ForeignKey(
+    #     settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL, related_name='receiver')
     created_on = models.DateTimeField(auto_now_add=True)
-    m_filepath = models.FileField(blank=True, null=True)
+    # m_filepath = models.FileField(blank=True, null=True)
 
     def __str__(self):
         return self.m_content

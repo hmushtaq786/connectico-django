@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
-from .models import Organization, User, Workspace, Project, Team, Task, InvitedUser, user_workspace_relation, user_project_relation, user_team_relation, Event, WorkspaceEvent, ProjectEvent, TeamEvent, Post, WorkspacePost, ProjectPost, TeamPost, WorkspacePostComment, ProjectPostComment, TeamPostComment
+from .models import Organization, User, Workspace, Project, Team, Task, InvitedUser, user_workspace_relation, user_project_relation, user_team_relation, Event, WorkspaceEvent, ProjectEvent, TeamEvent, Post, WorkspacePost, ProjectPost, TeamPost, WorkspacePostComment, ProjectPostComment, TeamPostComment, Message
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -169,6 +169,19 @@ class PostCommentDataSerializer(serializers.Serializer):
     created_by__photo_address = serializers.CharField(max_length=255)
 
 
+class UserWorkspaceDataSerializer(serializers.Serializer):
+    uwr_id = serializers.IntegerField()
+    u_id__id = serializers.IntegerField()
+    w_id__w_id = serializers.IntegerField()
+    w_id__w_name = serializers.CharField(max_length=30)
+    w_id__description = serializers.CharField(max_length=200)
+    w_id__w_address = serializers.CharField(max_length=200)
+    w_id__created_on = serializers.DateTimeField()
+    w_id__updated_on = serializers.DateTimeField()
+    w_id__created_by__id = serializers.IntegerField()
+    w_id__organization_id_id = serializers.IntegerField()
+
+
 class UserProjectDataSerializer(serializers.Serializer):
     upr_id = serializers.IntegerField()
     u_id__id = serializers.IntegerField()
@@ -257,3 +270,21 @@ class AnotherTestSerializer(serializers.Serializer):
     tm_name = serializers.CharField(max_length=200)
     project_id__workspace_id__organization_id__id = serializers.IntegerField()
     project_id__workspace_id__w_id = serializers.IntegerField()
+
+
+class MessageSerializer(serializers.Serializer):
+    # class Meta:
+    #     model = Message
+    #     fields = '__all__'
+    m_id = serializers.IntegerField()
+    m_content = serializers.CharField(max_length=500)
+    m_filepath = serializers.CharField(max_length=200)
+    created_on = serializers.DateTimeField()
+    sender_id__id = serializers.IntegerField()
+    sender_id__first_name = serializers.CharField(max_length=50)
+    sender_id__last_name = serializers.CharField(max_length=50)
+    sender_id__photo_address = serializers.CharField(max_length=200)
+    receiver_id__id = serializers.IntegerField()
+    receiver_id__first_name = serializers.CharField(max_length=50)
+    receiver_id__last_name = serializers.CharField(max_length=50)
+    receiver_id__photo_address = serializers.CharField(max_length=200)

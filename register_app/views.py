@@ -1,3 +1,4 @@
+import pusher
 from django.core.mail import send_mail
 from password_generator import PasswordGenerator
 import re
@@ -13,12 +14,12 @@ from rest_framework.decorators import action, api_view, authentication_classes, 
 from rest_framework.authentication import TokenAuthentication, BasicAuthentication
 from django.contrib.auth.hashers import make_password
 from django.db import connection
-
+from django.db.models import Q
 ###MODELS###
-from .models import Organization, Workspace, Project, Team, Task, InvitedUser, user_workspace_relation, Event, WorkspaceEvent, ProjectEvent, TeamEvent, Post, WorkspacePost, ProjectPost, TeamPost, WorkspacePostComment, ProjectPostComment, TeamPostComment, user_project_relation, user_team_relation
+from .models import Organization, Workspace, Project, Team, Task, InvitedUser, user_workspace_relation, Event, WorkspaceEvent, ProjectEvent, TeamEvent, Post, WorkspacePost, ProjectPost, TeamPost, WorkspacePostComment, ProjectPostComment, TeamPostComment, user_project_relation, user_team_relation, Message
 
 ###SERIALIZERS###
-from .serializers import UserSerializer, OrganizationSerializer, UserMiniSerializer, WorkspaceSerializer, ProjectSerializer, TeamSerializer, InvitedUserSerializer, UserWorkspaceRelationsSerializer, UserProjectRelationsSerializer, EventSerializer, WorkspaceEventSerializer, ProjectEventSerializer, TeamEventSerializer, MembersSerializer, PostSerializer, WorkspacePostSerializer, ProjectPostSerializer, TeamPostSerializer, PostDataSerializer, WorkspacePostCommentSerializer, ProjectPostCommentSerializer, TeamPostCommentSerializer, PostCommentDataSerializer, UserProjectDataSerializer, ProjectUserDataSerializer, UserTeamDataSerializer, TeamUserDataSerializer, UserTeamRelationsSerializer, TaskSerializer, TestSerializer, AnotherTestSerializer
+from .serializers import UserSerializer, OrganizationSerializer, UserMiniSerializer, WorkspaceSerializer, ProjectSerializer, TeamSerializer, InvitedUserSerializer, UserWorkspaceRelationsSerializer, UserProjectRelationsSerializer, EventSerializer, WorkspaceEventSerializer, ProjectEventSerializer, TeamEventSerializer, MembersSerializer, PostSerializer, WorkspacePostSerializer, ProjectPostSerializer, TeamPostSerializer, PostDataSerializer, WorkspacePostCommentSerializer, ProjectPostCommentSerializer, TeamPostCommentSerializer, PostCommentDataSerializer, UserProjectDataSerializer, ProjectUserDataSerializer, UserTeamDataSerializer, TeamUserDataSerializer, UserTeamRelationsSerializer, TaskSerializer, TestSerializer, AnotherTestSerializer, UserWorkspaceDataSerializer, MessageSerializer
 
 # Create your views here.
 
@@ -154,6 +155,41 @@ class ProjectViewSet(viewsets.ModelViewSet):
 
         projects = get_list_or_404(queryset,)
         serializer = ProjectSerializer(projects, many=True)
+        return Response(serializer.data)
+
+
+class UserWorkspaceViewSet(viewsets.ModelViewSet):
+    queryset = Workspace.objects.all()
+    serializer_class = WorkspaceSerializer
+    authentication_classes = (TokenAuthentication,)
+
+    def retrieve(self, request, pk=None):
+        action = pk[0]
+        pk = pk[1:]
+
+        serializer = {'data': ''}
+
+        if action == 'u':  # to search using the user_id
+            queryset = user_workspace_relation.objects.select_related(
+                'u_id', 'w_id').values(
+                'uwr_id', 'u_id__id', 'w_id__w_id', 'w_id__w_name', 'w_id__description', 'w_id__w_address', 'w_id__created_on', 'w_id__updated_on', 'w_id__created_by__id', 'w_id__organization_id_id').filter(u_id=pk).order_by('w_id')
+            projects = get_list_or_404(queryset,)
+            serializer = UserWorkspaceDataSerializer(projects, many=True)
+
+        elif action == 'p':  # to search using the project_id
+            queryset = user_project_relation.objects.select_related(
+                'u_id', 'p_id').values(
+                'upr_id', 'u_id__id', 'u_id__username', 'u_id__first_name', 'u_id__last_name', 'u_id__email', 'u_id__photo_address', 'u_id__organization_id').filter(p_id=pk)
+            projects = get_list_or_404(queryset,)
+            serializer = ProjectUserDataSerializer(projects, many=True)
+
+        elif action == 'o':  # to search using the org_id
+            queryset = Project.objects.select_related(
+                'workspace_id').values(
+                'p_id', 'p_name', 'workspace_id__w_id', 'workspace_id__organization_id__id').filter(workspace_id__organization_id__id=pk)
+            projects = get_list_or_404(queryset,)
+            serializer = TestSerializer(projects, many=True)
+
         return Response(serializer.data)
 
 
@@ -753,3 +789,38 @@ class TaskViewSet(viewsets.ModelViewSet):
         teams = get_list_or_404(queryset,)
         serializer = TaskSerializer(teams, many=True)
         return Response(serializer.data)
+
+
+class MessageViewSet(viewsets.ModelViewSet):
+    queryset = Message.objects.all()
+    serializer_class = MessageSerializer
+    authentication_classes = (TokenAuthentication,)
+
+    def retrieve(self, request, pk=None):
+        action = pk[0]
+        pk = pk[1:]
+        if action == 'u':  # to search using the user_id
+            queryset = Message.objects.select_related('sender_id', 'receiver_id').values(
+                'm_id', 'm_content', 'm_filepath', 'created_on', 'sender_id__id', 'sender_id__first_name', 'sender_id__last_name', 'sender_id__photo_address', 'receiver_id__id', 'receiver_id__first_name', 'receiver_id__last_name', 'receiver_id__photo_address').filter(
+                Q(sender_id=pk) | Q(receiver_id=pk))
+            # queryset = Message.objects.filter(sender_id=pk)
+
+        elif action == 'm':  # to search using the message_id
+            queryset = Message.objects.filter(m_id=pk)
+        messages = get_list_or_404(queryset,)
+        serializer = MessageSerializer(messages, many=True)
+        return Response(serializer.data)
+
+
+class PusherTest():
+    pusher_client = pusher.Pusher(
+        app_id='960942',
+        key='c2c29162a0876ff05eae',
+        secret='ccb97a0a4e0f02089327',
+        cluster='ap2',
+        ssl=True
+    )
+
+    pusher_client.trigger('my-channel', 'my-event', {'message': 'hello world'})
+
+    pusher_client.channels_info(u"my-channel")
