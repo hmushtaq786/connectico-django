@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework import routers
-from .views import UserViewSet, OrganizationViewSet, ProjectViewSet, OrganizationUsersViewSet, WorkspaceViewSet, WorkspaceMembersViewSet, InviteMembers, OrganizationInvitedUserViewSet, FirstTimeUserAuth, UserWorkspaceRelationViewSet, UserProjectRelationViewSet, EventViewSet, WorkspaceEventViewSet, PostViewSet, WorkspacePostViewSet, ProjectPostViewSet, TaskViewSet, WorkspacePostCommentViewSet, ProjectPostCommentViewSet, UserProjectViewSet, UserTeamViewSet, TeamViewSet, ProjectEventViewSet, ProjectMembersViewSet, UserTeamRelationViewSet, TeamEventViewSet, TeamPostViewSet, TeamPostCommentViewSet, UserWorkspaceViewSet, MessageViewSet
+from .views import UserViewSet, OrganizationViewSet, ProjectViewSet, OrganizationUsersViewSet, WorkspaceViewSet, WorkspaceMembersViewSet, InviteMembers, OrganizationInvitedUserViewSet, FirstTimeUserAuth, UserWorkspaceRelationViewSet, UserProjectRelationViewSet, EventViewSet, WorkspaceEventViewSet, PostViewSet, WorkspacePostViewSet, ProjectPostViewSet, TaskViewSet, WorkspacePostCommentViewSet, ProjectPostCommentViewSet, UserProjectViewSet, UserTeamViewSet, TeamViewSet, ProjectEventViewSet, ProjectMembersViewSet, UserTeamRelationViewSet, TeamEventViewSet, TeamPostViewSet, TeamPostCommentViewSet, UserWorkspaceViewSet, MessageViewSet, LastMessageViewSet, ConversationViewSet
 from django.contrib.auth.forms import UserCreationForm
 
 
@@ -23,6 +23,8 @@ router.register('organization/workspaces/tasks', TaskViewSet)
 router.register('organization/users/workspaces', UserWorkspaceViewSet)
 router.register('organization/users/projects', UserProjectViewSet)
 router.register('organization/users/teams', UserTeamViewSet)
+router.register('organization/users/conversations', ConversationViewSet)
+router.register('organization/users/messages/last', LastMessageViewSet)
 router.register('organization/users/messages', MessageViewSet)
 router.register('organization/workspaces/members',
                 WorkspaceMembersViewSet, base_name='workspace_members')

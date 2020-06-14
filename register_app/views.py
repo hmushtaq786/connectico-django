@@ -16,10 +16,10 @@ from django.contrib.auth.hashers import make_password
 from django.db import connection
 from django.db.models import Q
 ###MODELS###
-from .models import Organization, Workspace, Project, Team, Task, InvitedUser, user_workspace_relation, Event, WorkspaceEvent, ProjectEvent, TeamEvent, Post, WorkspacePost, ProjectPost, TeamPost, WorkspacePostComment, ProjectPostComment, TeamPostComment, user_project_relation, user_team_relation, Message
+from .models import Organization, Workspace, Project, Team, Task, InvitedUser, user_workspace_relation, Event, WorkspaceEvent, ProjectEvent, TeamEvent, Post, WorkspacePost, ProjectPost, TeamPost, WorkspacePostComment, ProjectPostComment, TeamPostComment, user_project_relation, user_team_relation, Message, Conversation
 
 ###SERIALIZERS###
-from .serializers import UserSerializer, OrganizationSerializer, UserMiniSerializer, WorkspaceSerializer, ProjectSerializer, TeamSerializer, InvitedUserSerializer, UserWorkspaceRelationsSerializer, UserProjectRelationsSerializer, EventSerializer, WorkspaceEventSerializer, ProjectEventSerializer, TeamEventSerializer, MembersSerializer, PostSerializer, WorkspacePostSerializer, ProjectPostSerializer, TeamPostSerializer, PostDataSerializer, WorkspacePostCommentSerializer, ProjectPostCommentSerializer, TeamPostCommentSerializer, PostCommentDataSerializer, UserProjectDataSerializer, ProjectUserDataSerializer, UserTeamDataSerializer, TeamUserDataSerializer, UserTeamRelationsSerializer, TaskSerializer, TestSerializer, AnotherTestSerializer, UserWorkspaceDataSerializer, MessageSerializer
+from .serializers import UserSerializer, OrganizationSerializer, UserMiniSerializer, WorkspaceSerializer, ProjectSerializer, TeamSerializer, InvitedUserSerializer, UserWorkspaceRelationsSerializer, UserProjectRelationsSerializer, EventSerializer, WorkspaceEventSerializer, ProjectEventSerializer, TeamEventSerializer, MembersSerializer, PostSerializer, WorkspacePostSerializer, ProjectPostSerializer, TeamPostSerializer, PostDataSerializer, WorkspacePostCommentSerializer, ProjectPostCommentSerializer, TeamPostCommentSerializer, PostCommentDataSerializer, UserProjectDataSerializer, ProjectUserDataSerializer, UserTeamDataSerializer, TeamUserDataSerializer, UserTeamRelationsSerializer, TaskSerializer, TestSerializer, AnotherTestSerializer, UserWorkspaceDataSerializer, MessageSerializer, ConversationSerializer
 
 # Create your views here.
 
@@ -791,6 +791,27 @@ class TaskViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
+class ConversationViewSet(viewsets.ModelViewSet):
+    queryset = Conversation.objects.all()
+    serializer_class = ConversationSerializer
+    authentication_classes = (TokenAuthentication,)
+
+    def retrieve(self, request, pk=None):
+        action = pk[0]
+        pk = pk[1:]
+        if action == 'u':  # to search using the u_id
+            queryset = Conversation.objects.select_related('sender', 'receiver').values(
+                'c_id', 'channel_name', 'sender__id', 'sender__username', 'sender__first_name', 'sender__last_name', 'sender__photo_address', 'receiver__id', 'receiver__username', 'receiver__first_name', 'receiver__last_name', 'receiver__photo_address', 'created_on').filter(
+                Q(sender=pk) | Q(receiver=pk))
+            # queryset = Message.objects.filter(sender_id=pk)
+
+        elif action == 'c':  # to search using the message_id
+            queryset = Conversation.objects.filter(m_id=pk)
+        messages = get_list_or_404(queryset,)
+        serializer = ConversationSerializer(messages, many=True)
+        return Response(serializer.data)
+
+
 class MessageViewSet(viewsets.ModelViewSet):
     queryset = Message.objects.all()
     serializer_class = MessageSerializer
@@ -799,10 +820,19 @@ class MessageViewSet(viewsets.ModelViewSet):
     def retrieve(self, request, pk=None):
         action = pk[0]
         pk = pk[1:]
-        if action == 'u':  # to search using the user_id
-            queryset = Message.objects.select_related('sender_id', 'receiver_id').values(
-                'm_id', 'm_content', 'm_filepath', 'created_on', 'sender_id__id', 'sender_id__first_name', 'sender_id__last_name', 'sender_id__photo_address', 'receiver_id__id', 'receiver_id__first_name', 'receiver_id__last_name', 'receiver_id__photo_address').filter(
-                Q(sender_id=pk) | Q(receiver_id=pk))
+
+        if action == 's':  # to search using the slug
+            arg = pk.split('-')
+            username = arg[0]
+            c_id = arg[1]
+            print(username)
+            print(c_id)
+            queryset = Message.objects.select_related('conversation').values(
+                'm_id', 'm_content', 'conversation__c_id', 'conversation__channel_name', 'sent_by__id', 'created_on').filter(conversation=c_id).order_by('created_on')
+
+        elif action == 'c':  # to search using the conversation_id
+            queryset = Message.objects.select_related('conversation').values(
+                'm_id', 'm_content', 'conversation__c_id', 'conversation__channel_name', 'created_on').filter(conversation=pk)
             # queryset = Message.objects.filter(sender_id=pk)
 
         elif action == 'm':  # to search using the message_id
@@ -810,6 +840,17 @@ class MessageViewSet(viewsets.ModelViewSet):
         messages = get_list_or_404(queryset,)
         serializer = MessageSerializer(messages, many=True)
         return Response(serializer.data)
+
+
+class LastMessageViewSet(viewsets.ModelViewSet):
+    queryset = Message.objects.all()
+    serializer_class = MessageSerializer
+    authentication_classes = (TokenAuthentication,)
+
+    def retrieve(self, request, pk=None):
+        queryset = Message.objects.select_related('conversation').values(
+            'm_id', 'm_content', 'conversation__c_id', 'conversation__channel_name', 'sent_by__id', 'created_on').filter(conversation=pk).order_by('-created_on')[:1].get()
+        return Response(queryset)
 
 
 class PusherTest():

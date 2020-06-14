@@ -20,7 +20,7 @@ UserAdmin.fieldsets += ('Details',
                                     'is_first_login')}),
 
 UserAdmin.list_display = (
-    'username', 'email', 'first_name', 'last_name', 'is_staff')
+    'id', 'username', 'email', 'first_name', 'last_name', 'is_staff')
 admin.site.register(User, UserAdmin)
 admin.site.register(Organization)
 admin.site.register(Workspace)

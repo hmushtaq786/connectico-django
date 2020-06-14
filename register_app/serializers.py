@@ -272,19 +272,29 @@ class AnotherTestSerializer(serializers.Serializer):
     project_id__workspace_id__w_id = serializers.IntegerField()
 
 
+class ConversationSerializer(serializers.Serializer):
+    c_id = serializers.IntegerField()
+    channel_name = serializers.CharField(max_length=20)
+    sender__id = serializers.IntegerField()
+    sender__username = serializers.CharField(max_length=50)
+    sender__first_name = serializers.CharField(max_length=50)
+    sender__last_name = serializers.CharField(max_length=50)
+    sender__photo_address = serializers.CharField(max_length=200)
+    receiver__id = serializers.IntegerField()
+    receiver__username = serializers.CharField(max_length=50)
+    receiver__first_name = serializers.CharField(max_length=50)
+    receiver__last_name = serializers.CharField(max_length=50)
+    receiver__photo_address = serializers.CharField(max_length=200)
+    created_on = serializers.DateTimeField()
+
+
 class MessageSerializer(serializers.Serializer):
     # class Meta:
     #     model = Message
     #     fields = '__all__'
     m_id = serializers.IntegerField()
     m_content = serializers.CharField(max_length=500)
-    m_filepath = serializers.CharField(max_length=200)
+    conversation__c_id = serializers.IntegerField()
+    conversation__channel_name = serializers.CharField(max_length=20)
+    sent_by__id = serializers.IntegerField()
     created_on = serializers.DateTimeField()
-    sender_id__id = serializers.IntegerField()
-    sender_id__first_name = serializers.CharField(max_length=50)
-    sender_id__last_name = serializers.CharField(max_length=50)
-    sender_id__photo_address = serializers.CharField(max_length=200)
-    receiver_id__id = serializers.IntegerField()
-    receiver_id__first_name = serializers.CharField(max_length=50)
-    receiver_id__last_name = serializers.CharField(max_length=50)
-    receiver_id__photo_address = serializers.CharField(max_length=200)

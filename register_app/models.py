@@ -22,7 +22,7 @@ class User(AbstractUser):
         verbose_name='First login?', default=True)
 
     def __str__(self):
-        return self.first_name + ' ' + self.last_name
+        return str(self.id) + ' ' + self.first_name + ' ' + self.last_name
 
 
 class InvitedUser(models.Model):
@@ -235,27 +235,30 @@ class user_team_relation(models.Model):
 class Conversation(models.Model):
     c_id = models.AutoField(primary_key=True)
     channel_name = models.CharField(max_length=50)
-    first_user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL, related_name='first')
-    second_user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL, related_name='second')
+    sender = models.ForeignKey(
+        settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL, related_name='sender')
+    receiver = models.ForeignKey(
+        settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL, related_name='receiver')
     created_on = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return str(self.channel_name)
 
 
 class Message(models.Model):
     m_id = models.AutoField(primary_key=True)
     m_content = models.TextField(verbose_name='Content')
-    conversation_id = models.ForeignKey(
+    conversation = models.ForeignKey(
         Conversation, null=True, on_delete=models.SET_NULL)
-    # sender_id = models.ForeignKey(
-    #     settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL, related_name='sender')
+    sent_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL, related_name='sent_by')
     # receiver_id = models.ForeignKey(
     #     settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL, related_name='receiver')
     created_on = models.DateTimeField(auto_now_add=True)
     # m_filepath = models.FileField(blank=True, null=True)
 
     def __str__(self):
-        return self.m_content
+        return self.conversation.channel_name + " | " + self.m_content
 
 
 class Notification(models.Model):
