@@ -21,12 +21,14 @@ from .models import Organization, Workspace, Project, Team, Task, InvitedUser, u
 ###SERIALIZERS###
 from .serializers import UserSerializer, OrganizationSerializer, UserMiniSerializer, WorkspaceSerializer, ProjectSerializer, TeamSerializer, InvitedUserSerializer, UserWorkspaceRelationsSerializer, UserProjectRelationsSerializer, EventSerializer, WorkspaceEventSerializer, ProjectEventSerializer, TeamEventSerializer, MembersSerializer, PostSerializer, WorkspacePostSerializer, ProjectPostSerializer, TeamPostSerializer, PostDataSerializer, WorkspacePostCommentSerializer, ProjectPostCommentSerializer, TeamPostCommentSerializer, PostCommentDataSerializer, UserProjectDataSerializer, ProjectUserDataSerializer, UserTeamDataSerializer, TeamUserDataSerializer, UserTeamRelationsSerializer, TaskSerializer, TestSerializer, AnotherTestSerializer, UserWorkspaceDataSerializer, MessageSerializer, ConversationSerializer, MessageSimpleSerializer, ConversationSimpleSerializer
 
+from pusher_details import app_id, key, secret, cluster
+
 # Pusher details
 pusher_client = pusher.Pusher(
-    app_id='960942',
-    key='c2c29162a0876ff05eae',
-    secret='ccb97a0a4e0f02089327',
-    cluster='ap2',
+    app_id=app_id,
+    key=key,
+    secret=secret,
+    cluster=cluster,
     ssl=True
 )
 
