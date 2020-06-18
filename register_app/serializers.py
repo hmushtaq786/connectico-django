@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
-from .models import Organization, User, Workspace, Project, Team, Task, InvitedUser, user_workspace_relation, user_project_relation, user_team_relation, Event, WorkspaceEvent, ProjectEvent, TeamEvent, Post, WorkspacePost, ProjectPost, TeamPost, WorkspacePostComment, ProjectPostComment, TeamPostComment, Message
+from .models import Organization, User, Workspace, Project, Team, Task, InvitedUser, user_workspace_relation, user_project_relation, user_team_relation, Event, WorkspaceEvent, ProjectEvent, TeamEvent, Post, WorkspacePost, ProjectPost, TeamPost, WorkspacePostComment, ProjectPostComment, TeamPostComment, Message, Conversation
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -272,6 +272,12 @@ class AnotherTestSerializer(serializers.Serializer):
     project_id__workspace_id__w_id = serializers.IntegerField()
 
 
+class ConversationSimpleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Conversation
+        fields = '__all__'
+
+
 class ConversationSerializer(serializers.Serializer):
     c_id = serializers.IntegerField()
     channel_name = serializers.CharField(max_length=20)
@@ -286,6 +292,12 @@ class ConversationSerializer(serializers.Serializer):
     receiver__last_name = serializers.CharField(max_length=50)
     receiver__photo_address = serializers.CharField(max_length=200)
     created_on = serializers.DateTimeField()
+
+
+class MessageSimpleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Message
+        fields = '__all__'
 
 
 class MessageSerializer(serializers.Serializer):

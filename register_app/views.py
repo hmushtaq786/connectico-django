@@ -19,7 +19,16 @@ from django.db.models import Q
 from .models import Organization, Workspace, Project, Team, Task, InvitedUser, user_workspace_relation, Event, WorkspaceEvent, ProjectEvent, TeamEvent, Post, WorkspacePost, ProjectPost, TeamPost, WorkspacePostComment, ProjectPostComment, TeamPostComment, user_project_relation, user_team_relation, Message, Conversation
 
 ###SERIALIZERS###
-from .serializers import UserSerializer, OrganizationSerializer, UserMiniSerializer, WorkspaceSerializer, ProjectSerializer, TeamSerializer, InvitedUserSerializer, UserWorkspaceRelationsSerializer, UserProjectRelationsSerializer, EventSerializer, WorkspaceEventSerializer, ProjectEventSerializer, TeamEventSerializer, MembersSerializer, PostSerializer, WorkspacePostSerializer, ProjectPostSerializer, TeamPostSerializer, PostDataSerializer, WorkspacePostCommentSerializer, ProjectPostCommentSerializer, TeamPostCommentSerializer, PostCommentDataSerializer, UserProjectDataSerializer, ProjectUserDataSerializer, UserTeamDataSerializer, TeamUserDataSerializer, UserTeamRelationsSerializer, TaskSerializer, TestSerializer, AnotherTestSerializer, UserWorkspaceDataSerializer, MessageSerializer, ConversationSerializer
+from .serializers import UserSerializer, OrganizationSerializer, UserMiniSerializer, WorkspaceSerializer, ProjectSerializer, TeamSerializer, InvitedUserSerializer, UserWorkspaceRelationsSerializer, UserProjectRelationsSerializer, EventSerializer, WorkspaceEventSerializer, ProjectEventSerializer, TeamEventSerializer, MembersSerializer, PostSerializer, WorkspacePostSerializer, ProjectPostSerializer, TeamPostSerializer, PostDataSerializer, WorkspacePostCommentSerializer, ProjectPostCommentSerializer, TeamPostCommentSerializer, PostCommentDataSerializer, UserProjectDataSerializer, ProjectUserDataSerializer, UserTeamDataSerializer, TeamUserDataSerializer, UserTeamRelationsSerializer, TaskSerializer, TestSerializer, AnotherTestSerializer, UserWorkspaceDataSerializer, MessageSerializer, ConversationSerializer, MessageSimpleSerializer, ConversationSimpleSerializer
+
+# Pusher details
+pusher_client = pusher.Pusher(
+    app_id='960942',
+    key='c2c29162a0876ff05eae',
+    secret='ccb97a0a4e0f02089327',
+    cluster='ap2',
+    ssl=True
+)
 
 # Create your views here.
 
@@ -793,7 +802,7 @@ class TaskViewSet(viewsets.ModelViewSet):
 
 class ConversationViewSet(viewsets.ModelViewSet):
     queryset = Conversation.objects.all()
-    serializer_class = ConversationSerializer
+    serializer_class = ConversationSimpleSerializer
     authentication_classes = (TokenAuthentication,)
 
     def retrieve(self, request, pk=None):
@@ -814,8 +823,50 @@ class ConversationViewSet(viewsets.ModelViewSet):
 
 class MessageViewSet(viewsets.ModelViewSet):
     queryset = Message.objects.all()
-    serializer_class = MessageSerializer
+    serializer_class = MessageSimpleSerializer
     authentication_classes = (TokenAuthentication,)
+
+    def create(self, request):
+        cid = request.data['conversation']
+        uid = request.data['sent_by']
+        conversation = Conversation.objects.get(c_id=cid)
+        user = get_user_model().objects.get(id=uid)
+        queryset = Message.objects.create(
+            m_content=request.data['m_content'],
+            conversation=conversation,
+            sent_by=user,
+        )
+        serializer = MessageSimpleSerializer(queryset)
+        pusher_client.trigger(conversation.channel_name, 'message-received',
+                              {'message': user.first_name+" sent you a message.", "user_id": user.id})
+
+        # if request.method == 'POST':
+        #     _mutable = request.data._mutable
+        #     request.data._mutable = True
+        #     if request.data.get('organization_id'):
+        #         org_id = request.data['organization_id']
+        #         queryset = Organization.objects.filter(id=org_id)
+        #         org = get_object_or_404(queryset,)
+        #     else:
+        #         org = None
+        #     user = get_user_model().objects.create(
+        #         email=request.data['email'],
+        #         username=request.data['username'],
+        #         password=make_password(request.data['password']),
+        #         first_name=request.data['first_name'],
+        #         last_name=request.data['last_name'],
+        #         status_line=request.data.setdefault('status_line', ''),
+        #         phone_number=request.data.setdefault('phone_number', ''),
+        #         photo_address=request.data.setdefault('photo_address', ''),
+        #         organization_id=org)
+
+        #     serializer = UserSerializer(user)
+        #     request.data._mutable = _mutable
+        # else:
+        #     queryset = get_user_model().objects.all()
+        #     serializer = UserSerializer(queryset, many=True)
+
+        return Response(serializer.data)
 
     def retrieve(self, request, pk=None):
         action = pk[0]
@@ -853,15 +904,7 @@ class LastMessageViewSet(viewsets.ModelViewSet):
         return Response(queryset)
 
 
-class PusherTest():
-    pusher_client = pusher.Pusher(
-        app_id='960942',
-        key='c2c29162a0876ff05eae',
-        secret='ccb97a0a4e0f02089327',
-        cluster='ap2',
-        ssl=True
-    )
-
-    pusher_client.trigger('my-channel', 'my-event', {'message': 'hello world'})
-
-    pusher_client.channels_info(u"my-channel")
+# pusher_client.trigger('s71r41-iqra', 'message-received',
+#                       {'message': 'Hamza sent you a message.'})
+# pusher_client.trigger('s71r80-arzoo', 'message-received',
+#                       {'message': 'Hamza sent you a message.'})
