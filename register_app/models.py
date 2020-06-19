@@ -70,6 +70,8 @@ class Workspace(models.Model):
         max_length=100, verbose_name='Address', blank=True)
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
+    w_manager_id = models.ForeignKey(
+        settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL, related_name='workspace_manager')
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
     organization_id = models.ForeignKey(
