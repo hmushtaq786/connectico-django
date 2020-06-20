@@ -126,11 +126,11 @@ class Team(models.Model):
 class Task(models.Model):
 
     STATUSES = (
-        (0, 'Created'),
-        (1, 'Assigned'),
-        (2, 'In progress'),
-        (3, 'Completed'),
-        (4, 'Submitted')
+        # (0, 'Created'),
+        (0, 'Assigned'),
+        # (1, 'In progress'),
+        # (3, 'Completed'),
+        (1, 'Submitted')
     )
 
     t_id = models.AutoField(primary_key=True)
@@ -138,11 +138,17 @@ class Task(models.Model):
     t_description = models.CharField(max_length=100, blank=True)
     t_start_date = models.DateField()
     t_end_date = models.DateField()
-    t_status = models.CharField(max_length=10, choices=STATUSES)
+    t_status = models.CharField(max_length=10, blank=True, null=True)
     team_id = models.ForeignKey(
         Team, null=True, on_delete=models.SET_NULL)
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
+    completed = models.BooleanField(blank=True, null=True)
+    submitted_comment = models.CharField(max_length=200, blank=True, null=True)
+    assigned_filepath = models.CharField(
+        max_length=500, blank=True, verbose_name='Task assigned file address', null=True)
+    submitted_filepath = models.CharField(
+        max_length=500, blank=True, verbose_name='Task final file address', null=True)
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL, related_name='created_by')
     assigned_to = models.ForeignKey(

@@ -794,8 +794,11 @@ class TaskViewSet(viewsets.ModelViewSet):
         if action == 'tm':  # to search using the team_id
             queryset = Task.objects.filter(team_id=pk)
 
-        elif action == 't':  # to search using the task_id
-            queryset = Task.objects.filter(t_id=pk)
+        elif action == 'cr':  # to search using the created_by
+            queryset = Task.objects.filter(created_by=pk)
+
+        elif action == 'as':  # to search using the assigned_to
+            queryset = Task.objects.filter(assigned_to=pk)
 
         teams = get_list_or_404(queryset,)
         serializer = TaskSerializer(teams, many=True)
