@@ -90,6 +90,7 @@ class Project(models.Model):
     p_end_date = models.DateField(null=True)
     p_status = models.CharField(
         max_length=10, blank=True, verbose_name='Status')  # completed, active etc
+    p_completed = models.BooleanField(blank=True, null=True, default=False)
     workspace_id = models.ForeignKey(
         Workspace, null=True, on_delete=models.SET_NULL)
     p_manager_id = models.ForeignKey(
