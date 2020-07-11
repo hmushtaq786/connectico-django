@@ -115,6 +115,11 @@ class Team(models.Model):
         Project, null=True, on_delete=models.SET_NULL)
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
+    tm_completed = models.BooleanField(blank=True, null=True, default=False)
+    tm_submitted_comment = models.CharField(
+        max_length=300, blank=True, null=True)
+    tm_submitted_filepath = models.CharField(
+        max_length=500, blank=True, verbose_name='Task final file address', null=True)
     team_lead_id = models.ForeignKey(
         settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL, related_name='team_lead')
     created_by = models.ForeignKey(
