@@ -197,6 +197,9 @@ class UserProjectDataSerializer(serializers.Serializer):
     p_id__created_on = serializers.DateTimeField()
     p_id__updated_on = serializers.DateTimeField()
     p_id__created_by__id = serializers.IntegerField()
+    p_id__p_completed = serializers.BooleanField()
+    p_id__p_submitted_comment = serializers.CharField(max_length=300)
+    p_id__p_submitted_filepath = serializers.CharField(max_length=500)
 
 
 class ProjectUserDataSerializer(serializers.Serializer):

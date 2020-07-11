@@ -218,7 +218,7 @@ class UserProjectViewSet(viewsets.ModelViewSet):
         if action == 'u':  # to search using the user_id
             queryset = user_project_relation.objects.select_related(
                 'u_id', 'p_id').values(
-                'upr_id', 'u_id__id', 'p_id__p_id', 'p_id__p_name', 'p_id__p_description', 'p_id__p_start_date', 'p_id__p_end_date', 'p_id__p_status', 'p_id__workspace_id__w_id', 'p_id__workspace_id__w_name', 'p_id__p_manager_id__id', 'p_id__created_on', 'p_id__updated_on', 'p_id__created_by__id').filter(u_id=pk).order_by('p_id')
+                'upr_id', 'u_id__id', 'p_id__p_id', 'p_id__p_name', 'p_id__p_description', 'p_id__p_start_date', 'p_id__p_end_date', 'p_id__p_status', 'p_id__workspace_id__w_id', 'p_id__workspace_id__w_name', 'p_id__p_manager_id__id', 'p_id__created_on', 'p_id__updated_on', 'p_id__created_by__id', 'p_id__p_completed','p_id__p_submitted_comment','p_id__p_submitted_filepath').filter(u_id=pk).order_by('p_id')
             projects = get_list_or_404(queryset,)
             serializer = UserProjectDataSerializer(projects, many=True)
 
