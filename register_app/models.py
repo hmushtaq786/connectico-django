@@ -92,7 +92,7 @@ class Project(models.Model):
         max_length=10, blank=True, verbose_name='Status')  # completed, active etc
     p_completed = models.BooleanField(blank=True, null=True, default=False)
     p_submitted_comment = models.CharField(
-        max_length=300, blank=True, null=True)
+        max_length=500, blank=True, null=True)
     p_submitted_filepath = models.CharField(
         max_length=500, blank=True, verbose_name='Task final file address', null=True)
     workspace_id = models.ForeignKey(
@@ -121,7 +121,7 @@ class Team(models.Model):
     updated_on = models.DateTimeField(auto_now=True)
     tm_completed = models.BooleanField(blank=True, null=True, default=False)
     tm_submitted_comment = models.CharField(
-        max_length=300, blank=True, null=True)
+        max_length=500, blank=True, null=True)
     tm_submitted_filepath = models.CharField(
         max_length=500, blank=True, verbose_name='Task final file address', null=True)
     team_lead_id = models.ForeignKey(

@@ -198,7 +198,7 @@ class UserProjectDataSerializer(serializers.Serializer):
     p_id__updated_on = serializers.DateTimeField()
     p_id__created_by__id = serializers.IntegerField()
     p_id__p_completed = serializers.BooleanField()
-    p_id__p_submitted_comment = serializers.CharField(max_length=300)
+    p_id__p_submitted_comment = serializers.CharField(max_length=500)
     p_id__p_submitted_filepath = serializers.CharField(max_length=500)
 
 
@@ -222,7 +222,7 @@ class UserTeamDataSerializer(serializers.Serializer):
     t_id__tm_start_date = serializers.DateField()
     t_id__tm_end_date = serializers.DateField()
     t_id__tm_completed = serializers.BooleanField()
-    t_id__tm_submitted_comment = serializers.CharField(max_length=300)
+    t_id__tm_submitted_comment = serializers.CharField(max_length=500)
     t_id__tm_submitted_filepath = serializers.CharField(max_length=500)
     t_id__project_id__p_id = serializers.IntegerField()
     t_id__project_id__p_name = serializers.CharField(max_length=30)
